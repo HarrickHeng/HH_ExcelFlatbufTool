@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>youyou_ExcelFlatbufTool</id>
+    <version>1.0.0</version>
+    <authors>youyou_ExcelFlatbufTool</authors>
+    <owners>youyou_ExcelFlatbufTool</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework=".NETCoreApp3.0">
+        <dependency id="DotNetCore.NPOI" version="1.2.2" exclude="Build,Analyzers" />
+        <dependency id="System.Management" version="4.7.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="F:\UnityProject\youyouMMO\trunk\Public\Tools\youyou_ExcelFlatbufTool\youyou_ExcelFlatbufTool\bin\Debug\netcoreapp3.0\youyou_ExcelFlatbufTool.runtimeconfig.json" target="lib\netcoreapp3.0\youyou_ExcelFlatbufTool.runtimeconfig.json" />
+    <file src="F:\UnityProject\youyouMMO\trunk\Public\Tools\youyou_ExcelFlatbufTool\youyou_ExcelFlatbufTool\bin\Debug\netcoreapp3.0\youyou_ExcelFlatbufTool.dll" target="lib\netcoreapp3.0\youyou_ExcelFlatbufTool.dll" />
+  </files>
+</package>

@@ -1,0 +1,5 @@
+E:\CodeProject\Unity_DEMO\HH_ExcelFlatbufTool\youyou_ExcelFlatbufTool\obj\Debug\netcoreapp3.0\HH_ExcelFlatbufTool2.csproj.AssemblyReference.cache
+E:\CodeProject\Unity_DEMO\HH_ExcelFlatbufTool\youyou_ExcelFlatbufTool\obj\Debug\netcoreapp3.0\HH_ExcelFlatbufTool2.GeneratedMSBuildEditorConfig.editorconfig
+E:\CodeProject\Unity_DEMO\HH_ExcelFlatbufTool\youyou_ExcelFlatbufTool\obj\Debug\netcoreapp3.0\HH_ExcelFlatbufTool2.AssemblyInfoInputs.cache
+E:\CodeProject\Unity_DEMO\HH_ExcelFlatbufTool\youyou_ExcelFlatbufTool\obj\Debug\netcoreapp3.0\HH_ExcelFlatbufTool2.AssemblyInfo.cs
+E:\CodeProject\Unity_DEMO\HH_ExcelFlatbufTool\youyou_ExcelFlatbufTool\obj\Debug\netcoreapp3.0\HH_ExcelFlatbufTool2.csproj.CoreCompileInputs.cache
