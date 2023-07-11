@@ -43,6 +43,15 @@ public struct DTSkill : IFlatbufferObject
   public byte[] GetSkillPicArray() { return __p.__vector_as_array<byte>(10); }
   public int LevelLimit { get { int o = __p.__offset(12); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
   public int IsPassive { get { int o = __p.__offset(14); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
+  public int ValidTargetRoleType(int j) { int o = __p.__offset(16); return o != 0 ? __p.bb.GetInt(__p.__vector(o) + j * 4) : (int)0; }
+  public int ValidTargetRoleTypeLength { get { int o = __p.__offset(16); return o != 0 ? __p.__vector_len(o) : 0; } }
+#if ENABLE_SPAN_T
+  public Span<int> GetValidTargetRoleTypeBytes() { return __p.__vector_as_span<int>(16, 4); }
+#else
+  public ArraySegment<byte>? GetValidTargetRoleTypeBytes() { return __p.__vector_as_arraysegment(16); }
+#endif
+  public int[] GetValidTargetRoleTypeArray() { return __p.__vector_as_array<int>(16); }
+  public float MinAttackDistance { get { int o = __p.__offset(18); return o != 0 ? __p.bb.GetFloat(o + __p.bb_pos) : (float)0.0f; } }
 
   public static Offset<HHFramework.DataTable.DTSkill> CreateDTSkill(FlatBufferBuilder builder,
       int Id = 0,
@@ -50,8 +59,12 @@ public struct DTSkill : IFlatbufferObject
       StringOffset SkillDescOffset = default(StringOffset),
       StringOffset SkillPicOffset = default(StringOffset),
       int LevelLimit = 0,
-      int IsPassive = 0) {
-    builder.StartTable(6);
+      int IsPassive = 0,
+      VectorOffset ValidTargetRoleTypeOffset = default(VectorOffset),
+      float MinAttackDistance = 0.0f) {
+    builder.StartTable(8);
+    DTSkill.AddMinAttackDistance(builder, MinAttackDistance);
+    DTSkill.AddValidTargetRoleType(builder, ValidTargetRoleTypeOffset);
     DTSkill.AddIsPassive(builder, IsPassive);
     DTSkill.AddLevelLimit(builder, LevelLimit);
     DTSkill.AddSkillPic(builder, SkillPicOffset);
@@ -61,13 +74,20 @@ public struct DTSkill : IFlatbufferObject
     return DTSkill.EndDTSkill(builder);
   }
 
-  public static void StartDTSkill(FlatBufferBuilder builder) { builder.StartTable(6); }
+  public static void StartDTSkill(FlatBufferBuilder builder) { builder.StartTable(8); }
   public static void AddId(FlatBufferBuilder builder, int Id) { builder.AddInt(0, Id, 0); }
   public static void AddSkillName(FlatBufferBuilder builder, StringOffset SkillNameOffset) { builder.AddOffset(1, SkillNameOffset.Value, 0); }
   public static void AddSkillDesc(FlatBufferBuilder builder, StringOffset SkillDescOffset) { builder.AddOffset(2, SkillDescOffset.Value, 0); }
   public static void AddSkillPic(FlatBufferBuilder builder, StringOffset SkillPicOffset) { builder.AddOffset(3, SkillPicOffset.Value, 0); }
   public static void AddLevelLimit(FlatBufferBuilder builder, int LevelLimit) { builder.AddInt(4, LevelLimit, 0); }
   public static void AddIsPassive(FlatBufferBuilder builder, int IsPassive) { builder.AddInt(5, IsPassive, 0); }
+  public static void AddValidTargetRoleType(FlatBufferBuilder builder, VectorOffset ValidTargetRoleTypeOffset) { builder.AddOffset(6, ValidTargetRoleTypeOffset.Value, 0); }
+  public static VectorOffset CreateValidTargetRoleTypeVector(FlatBufferBuilder builder, int[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddInt(data[i]); return builder.EndVector(); }
+  public static VectorOffset CreateValidTargetRoleTypeVectorBlock(FlatBufferBuilder builder, int[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
+  public static VectorOffset CreateValidTargetRoleTypeVectorBlock(FlatBufferBuilder builder, ArraySegment<int> data) { builder.StartVector(4, data.Count, 4); builder.Add(data); return builder.EndVector(); }
+  public static VectorOffset CreateValidTargetRoleTypeVectorBlock(FlatBufferBuilder builder, IntPtr dataPtr, int sizeInBytes) { builder.StartVector(1, sizeInBytes, 1); builder.Add<int>(dataPtr, sizeInBytes); return builder.EndVector(); }
+  public static void StartValidTargetRoleTypeVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
+  public static void AddMinAttackDistance(FlatBufferBuilder builder, float MinAttackDistance) { builder.AddFloat(7, MinAttackDistance, 0.0f); }
   public static Offset<HHFramework.DataTable.DTSkill> EndDTSkill(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<HHFramework.DataTable.DTSkill>(o);

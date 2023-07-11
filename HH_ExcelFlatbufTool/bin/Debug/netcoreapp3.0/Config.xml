@@ -63,11 +63,17 @@
 		<Item Name="DTSkillLevel" />
 	</CSharpTableList>
 	<LuaTableList>
-		<Item Name="DTJob" LoadType="0" />
-		<Item Name="DTJobLevel" LoadType="0" />
-		<Item Name="DTBattleAttr" LoadType="0" />
-		<Item Name="DTBuff" LoadType="0" />
-		<Item Name="DTSkill" LoadType="0" />
-		<Item Name="DTSkillLevel" LoadType="0" />
+		<!--LoadType 0=从lua文件读取 1=从c#已有数据加载-->
+		<Item Name="DTJob" LoadType="1" />
+		<Item Name="DTJobLevel" LoadType="1" />
+		<Item Name="DTBattleAttr" LoadType="1" />
+		<Item Name="DTBuff" LoadType="1" />
+		<Item Name="DTSkill" LoadType="1" />
+		<Item Name="DTSkillLevel" LoadType="1" />
+		<Item Name="DTShop" LoadType="0" />
+		<Item Name="DTShopCategory" LoadType="0" />
+		<Item Name="DTEquip" LoadType="0" />
+		<Item Name="DTItem" LoadType="0" />
+		<Item Name="DTMaterials" LoadType="0" />
 	</LuaTableList>
 </Root>

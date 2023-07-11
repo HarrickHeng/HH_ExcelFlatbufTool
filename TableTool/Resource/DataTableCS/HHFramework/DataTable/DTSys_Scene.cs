@@ -51,6 +51,8 @@ public struct DTSys_Scene : IFlatbufferObject
   public ArraySegment<byte>? GetPlayerBornPosBytes() { return __p.__vector_as_arraysegment(16); }
 #endif
   public float[] GetPlayerBornPosArray() { return __p.__vector_as_array<float>(16); }
+  public int SceneLineMaxNumPeople { get { int o = __p.__offset(18); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
+  public int SceneMaxNumPeople { get { int o = __p.__offset(20); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
 
   public static Offset<HHFramework.DataTable.DTSys_Scene> CreateDTSys_Scene(FlatBufferBuilder builder,
       int Id = 0,
@@ -59,8 +61,12 @@ public struct DTSys_Scene : IFlatbufferObject
       StringOffset SceneNameOffset = default(StringOffset),
       int BGMId = 0,
       int SceneType = 0,
-      VectorOffset PlayerBornPosOffset = default(VectorOffset)) {
-    builder.StartTable(7);
+      VectorOffset PlayerBornPosOffset = default(VectorOffset),
+      int SceneLineMaxNumPeople = 0,
+      int SceneMaxNumPeople = 0) {
+    builder.StartTable(9);
+    DTSys_Scene.AddSceneMaxNumPeople(builder, SceneMaxNumPeople);
+    DTSys_Scene.AddSceneLineMaxNumPeople(builder, SceneLineMaxNumPeople);
     DTSys_Scene.AddPlayerBornPos(builder, PlayerBornPosOffset);
     DTSys_Scene.AddSceneType(builder, SceneType);
     DTSys_Scene.AddBGMId(builder, BGMId);
@@ -71,7 +77,7 @@ public struct DTSys_Scene : IFlatbufferObject
     return DTSys_Scene.EndDTSys_Scene(builder);
   }
 
-  public static void StartDTSys_Scene(FlatBufferBuilder builder) { builder.StartTable(7); }
+  public static void StartDTSys_Scene(FlatBufferBuilder builder) { builder.StartTable(9); }
   public static void AddId(FlatBufferBuilder builder, int Id) { builder.AddInt(0, Id, 0); }
   public static void AddDesc(FlatBufferBuilder builder, StringOffset DescOffset) { builder.AddOffset(1, DescOffset.Value, 0); }
   public static void AddName(FlatBufferBuilder builder, StringOffset NameOffset) { builder.AddOffset(2, NameOffset.Value, 0); }
@@ -84,6 +90,8 @@ public struct DTSys_Scene : IFlatbufferObject
   public static VectorOffset CreatePlayerBornPosVectorBlock(FlatBufferBuilder builder, ArraySegment<float> data) { builder.StartVector(4, data.Count, 4); builder.Add(data); return builder.EndVector(); }
   public static VectorOffset CreatePlayerBornPosVectorBlock(FlatBufferBuilder builder, IntPtr dataPtr, int sizeInBytes) { builder.StartVector(1, sizeInBytes, 1); builder.Add<float>(dataPtr, sizeInBytes); return builder.EndVector(); }
   public static void StartPlayerBornPosVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
+  public static void AddSceneLineMaxNumPeople(FlatBufferBuilder builder, int SceneLineMaxNumPeople) { builder.AddInt(7, SceneLineMaxNumPeople, 0); }
+  public static void AddSceneMaxNumPeople(FlatBufferBuilder builder, int SceneMaxNumPeople) { builder.AddInt(8, SceneMaxNumPeople, 0); }
   public static Offset<HHFramework.DataTable.DTSys_Scene> EndDTSys_Scene(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<HHFramework.DataTable.DTSys_Scene>(o);

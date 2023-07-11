@@ -47,6 +47,7 @@ public struct DTSprite : IFlatbufferObject
   public int EXSkillInjureRate { get { int o = __p.__offset(42); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
   public int EXSkillInjureResRate { get { int o = __p.__offset(44); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
   public int IgnoreDefRate { get { int o = __p.__offset(46); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
+  public int Skill1 { get { int o = __p.__offset(48); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
 
   public static Offset<HHFramework.DataTable.DTSprite> CreateDTSprite(FlatBufferBuilder builder,
       int Id = 0,
@@ -70,8 +71,10 @@ public struct DTSprite : IFlatbufferObject
       int injureResRate = 0,
       int eXSkillInjureRate = 0,
       int eXSkillInjureResRate = 0,
-      int IgnoreDefRate = 0) {
-    builder.StartTable(22);
+      int IgnoreDefRate = 0,
+      int Skill1 = 0) {
+    builder.StartTable(23);
+    DTSprite.AddSkill1(builder, Skill1);
     DTSprite.AddIgnoreDefRate(builder, IgnoreDefRate);
     DTSprite.AddEXSkillInjureResRate(builder, eXSkillInjureResRate);
     DTSprite.AddEXSkillInjureRate(builder, eXSkillInjureRate);
@@ -97,7 +100,7 @@ public struct DTSprite : IFlatbufferObject
     return DTSprite.EndDTSprite(builder);
   }
 
-  public static void StartDTSprite(FlatBufferBuilder builder) { builder.StartTable(22); }
+  public static void StartDTSprite(FlatBufferBuilder builder) { builder.StartTable(23); }
   public static void AddId(FlatBufferBuilder builder, int Id) { builder.AddInt(0, Id, 0); }
   public static void AddSpriteType(FlatBufferBuilder builder, int SpriteType) { builder.AddInt(1, SpriteType, 0); }
   public static void AddName(FlatBufferBuilder builder, StringOffset NameOffset) { builder.AddOffset(2, NameOffset.Value, 0); }
@@ -120,6 +123,7 @@ public struct DTSprite : IFlatbufferObject
   public static void AddEXSkillInjureRate(FlatBufferBuilder builder, int eXSkillInjureRate) { builder.AddInt(19, eXSkillInjureRate, 0); }
   public static void AddEXSkillInjureResRate(FlatBufferBuilder builder, int eXSkillInjureResRate) { builder.AddInt(20, eXSkillInjureResRate, 0); }
   public static void AddIgnoreDefRate(FlatBufferBuilder builder, int IgnoreDefRate) { builder.AddInt(21, IgnoreDefRate, 0); }
+  public static void AddSkill1(FlatBufferBuilder builder, int Skill1) { builder.AddInt(22, Skill1, 0); }
   public static Offset<HHFramework.DataTable.DTSprite> EndDTSprite(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<HHFramework.DataTable.DTSprite>(o);

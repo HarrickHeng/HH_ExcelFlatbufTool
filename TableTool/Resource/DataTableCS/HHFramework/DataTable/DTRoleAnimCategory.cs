@@ -38,6 +38,7 @@ public struct DTRoleAnimCategory : IFlatbufferObject
   public ArraySegment<byte>? GetAttackBytes() { return __p.__vector_as_arraysegment(14); }
 #endif
   public int[] GetAttackArray() { return __p.__vector_as_array<int>(14); }
+  public int Die { get { int o = __p.__offset(16); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
 
   public static Offset<HHFramework.DataTable.DTRoleAnimCategory> CreateDTRoleAnimCategory(FlatBufferBuilder builder,
       int Id = 0,
@@ -45,8 +46,10 @@ public struct DTRoleAnimCategory : IFlatbufferObject
       int IdleNormalAnimId = 0,
       int RunAnimId = 0,
       int HurtAnimId = 0,
-      VectorOffset AttackOffset = default(VectorOffset)) {
-    builder.StartTable(6);
+      VectorOffset AttackOffset = default(VectorOffset),
+      int Die = 0) {
+    builder.StartTable(7);
+    DTRoleAnimCategory.AddDie(builder, Die);
     DTRoleAnimCategory.AddAttack(builder, AttackOffset);
     DTRoleAnimCategory.AddHurtAnimId(builder, HurtAnimId);
     DTRoleAnimCategory.AddRunAnimId(builder, RunAnimId);
@@ -56,7 +59,7 @@ public struct DTRoleAnimCategory : IFlatbufferObject
     return DTRoleAnimCategory.EndDTRoleAnimCategory(builder);
   }
 
-  public static void StartDTRoleAnimCategory(FlatBufferBuilder builder) { builder.StartTable(6); }
+  public static void StartDTRoleAnimCategory(FlatBufferBuilder builder) { builder.StartTable(7); }
   public static void AddId(FlatBufferBuilder builder, int Id) { builder.AddInt(0, Id, 0); }
   public static void AddDesc(FlatBufferBuilder builder, StringOffset DescOffset) { builder.AddOffset(1, DescOffset.Value, 0); }
   public static void AddIdleNormalAnimId(FlatBufferBuilder builder, int IdleNormalAnimId) { builder.AddInt(2, IdleNormalAnimId, 0); }
@@ -68,6 +71,7 @@ public struct DTRoleAnimCategory : IFlatbufferObject
   public static VectorOffset CreateAttackVectorBlock(FlatBufferBuilder builder, ArraySegment<int> data) { builder.StartVector(4, data.Count, 4); builder.Add(data); return builder.EndVector(); }
   public static VectorOffset CreateAttackVectorBlock(FlatBufferBuilder builder, IntPtr dataPtr, int sizeInBytes) { builder.StartVector(1, sizeInBytes, 1); builder.Add<int>(dataPtr, sizeInBytes); return builder.EndVector(); }
   public static void StartAttackVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
+  public static void AddDie(FlatBufferBuilder builder, int Die) { builder.AddInt(6, Die, 0); }
   public static Offset<HHFramework.DataTable.DTRoleAnimCategory> EndDTRoleAnimCategory(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<HHFramework.DataTable.DTRoleAnimCategory>(o);

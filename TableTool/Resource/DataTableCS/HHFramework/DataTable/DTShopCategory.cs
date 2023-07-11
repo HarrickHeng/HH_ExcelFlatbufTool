@@ -20,26 +20,36 @@ public struct DTShopCategory : IFlatbufferObject
   public DTShopCategory __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
   public int Id { get { int o = __p.__offset(4); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
-  public string Name { get { int o = __p.__offset(6); return o != 0 ? __p.__string(o + __p.bb_pos) : null; } }
+  public string Desc { get { int o = __p.__offset(6); return o != 0 ? __p.__string(o + __p.bb_pos) : null; } }
 #if ENABLE_SPAN_T
-  public Span<byte> GetNameBytes() { return __p.__vector_as_span<byte>(6, 1); }
+  public Span<byte> GetDescBytes() { return __p.__vector_as_span<byte>(6, 1); }
 #else
-  public ArraySegment<byte>? GetNameBytes() { return __p.__vector_as_arraysegment(6); }
+  public ArraySegment<byte>? GetDescBytes() { return __p.__vector_as_arraysegment(6); }
 #endif
-  public byte[] GetNameArray() { return __p.__vector_as_array<byte>(6); }
+  public byte[] GetDescArray() { return __p.__vector_as_array<byte>(6); }
+  public string Name { get { int o = __p.__offset(8); return o != 0 ? __p.__string(o + __p.bb_pos) : null; } }
+#if ENABLE_SPAN_T
+  public Span<byte> GetNameBytes() { return __p.__vector_as_span<byte>(8, 1); }
+#else
+  public ArraySegment<byte>? GetNameBytes() { return __p.__vector_as_arraysegment(8); }
+#endif
+  public byte[] GetNameArray() { return __p.__vector_as_array<byte>(8); }
 
   public static Offset<HHFramework.DataTable.DTShopCategory> CreateDTShopCategory(FlatBufferBuilder builder,
       int Id = 0,
+      StringOffset DescOffset = default(StringOffset),
       StringOffset NameOffset = default(StringOffset)) {
-    builder.StartTable(2);
+    builder.StartTable(3);
     DTShopCategory.AddName(builder, NameOffset);
+    DTShopCategory.AddDesc(builder, DescOffset);
     DTShopCategory.AddId(builder, Id);
     return DTShopCategory.EndDTShopCategory(builder);
   }
 
-  public static void StartDTShopCategory(FlatBufferBuilder builder) { builder.StartTable(2); }
+  public static void StartDTShopCategory(FlatBufferBuilder builder) { builder.StartTable(3); }
   public static void AddId(FlatBufferBuilder builder, int Id) { builder.AddInt(0, Id, 0); }
-  public static void AddName(FlatBufferBuilder builder, StringOffset NameOffset) { builder.AddOffset(1, NameOffset.Value, 0); }
+  public static void AddDesc(FlatBufferBuilder builder, StringOffset DescOffset) { builder.AddOffset(1, DescOffset.Value, 0); }
+  public static void AddName(FlatBufferBuilder builder, StringOffset NameOffset) { builder.AddOffset(2, NameOffset.Value, 0); }
   public static Offset<HHFramework.DataTable.DTShopCategory> EndDTShopCategory(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<HHFramework.DataTable.DTShopCategory>(o);

@@ -40,6 +40,8 @@ table DTSkill {
 	SkillPic:string;
 	LevelLimit:int;
 	IsPassive:int;
+	ValidTargetRoleType:[int];
+	MinAttackDistance:float;
 }
 table DTSkillList {
 	DTSkills:[DTSkill];
@@ -261,6 +263,7 @@ table DTRoleAnimCategory {
 	RunAnimId:int;
 	HurtAnimId:int;
 	Attack:[int];
+	Die:int;
 }
 table DTRoleAnimCategoryList {
 	DTRoleAnimCategorys:[DTRoleAnimCategory];
@@ -289,6 +292,7 @@ table DTSprite {
 	eXSkillInjureRate:int;
 	eXSkillInjureResRate:int;
 	IgnoreDefRate:int;
+	Skill1:int;
 }
 table DTSpriteList {
 	DTSprites:[DTSprite];
@@ -393,6 +397,7 @@ table DTShopList {
 
 table DTShopCategory {
 	Id:int;
+	Desc:string;
 	Name:string;
 }
 table DTShopCategoryList {
@@ -455,7 +460,6 @@ table DTSys_Prefab {
 	Id:int;
 	Desc:string;
 	Name:string;
-	AssetCategory:int;
 	AssetPath:string;
 	PoolId:ubyte;
 	CullDespawned:ubyte;
@@ -475,6 +479,8 @@ table DTSys_Scene {
 	BGMId:int;
 	SceneType:int;
 	PlayerBornPos:[float];
+	SceneLineMaxNumPeople:int;
+	SceneMaxNumPeople:int;
 }
 table DTSys_SceneList {
 	DTSys_Scenes:[DTSys_Scene];
