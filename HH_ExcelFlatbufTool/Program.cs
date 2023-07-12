@@ -31,6 +31,7 @@ namespace HH_ExcelFlatbufTool
         }
 
         #region ReadFiles
+
         public static List<string> ReadFiles(string path)
         {
             string[] arr = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
@@ -46,6 +47,7 @@ namespace HH_ExcelFlatbufTool
                 {
                     continue;
                 }
+
                 if (file.Extension.Equals(".xls") || file.Extension.Equals(".xlsx"))
                 {
                     ReadData(file.FullName, file.Name.Substring(0, file.Name.LastIndexOf('.')));
@@ -62,7 +64,8 @@ namespace HH_ExcelFlatbufTool
         /// <param name="sheetName">指定读取excel工作薄sheet的名称</param>
         /// <param name="isFirstRowColumn">第一行是否是DataTable的列名：true=是，false=否</param>
         /// <returns>DataTable数据表</returns>
-        public static DataTable ReadExcelToDataTable(string fileName, string sheetName = null, bool isFirstRowColumn = true)
+        public static DataTable ReadExcelToDataTable(string fileName, string sheetName = null,
+            bool isFirstRowColumn = true)
         {
             //定义要返回的datatable对象
             DataTable data = new DataTable();
@@ -77,6 +80,7 @@ namespace HH_ExcelFlatbufTool
                 {
                     return null;
                 }
+
                 //根据指定路径读取文件
                 FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
                 //根据文件流创建excel数据结构
@@ -97,6 +101,7 @@ namespace HH_ExcelFlatbufTool
                     //如果没有指定的sheetName，则尝试获取第一个sheet
                     sheet = workbook.GetSheetAt(0);
                 }
+
                 if (sheet != null)
                 {
                     IRow firstRow = sheet.GetRow(0);
@@ -118,12 +123,14 @@ namespace HH_ExcelFlatbufTool
                                 }
                             }
                         }
+
                         startRow = sheet.FirstRowNum;
                     }
                     else
                     {
                         startRow = sheet.FirstRowNum;
                     }
+
                     //最后一列的标号
                     int rowCount = sheet.LastRowNum;
 
@@ -176,6 +183,7 @@ namespace HH_ExcelFlatbufTool
                         data.Rows.Add(dataRow);
                     }
                 }
+
                 return data;
             }
             catch (Exception ex)
@@ -187,7 +195,6 @@ namespace HH_ExcelFlatbufTool
 
         private static void ReadData(string filePath, string fileName)
         {
-
             if (string.IsNullOrEmpty(filePath)) return;
 
             //把表格复制一下
@@ -210,6 +217,7 @@ namespace HH_ExcelFlatbufTool
                 CreateData(fileName, dt);
             }
         }
+
         #endregion
 
         /// <summary>
@@ -222,7 +230,8 @@ namespace HH_ExcelFlatbufTool
         /// </summary>
         private static Dictionary<string, string[,]> TableHeadDic = new Dictionary<string, string[,]>();
 
-        private static Dictionary<string, List<DataTableHeadData>> TablesData = new Dictionary<string, List<DataTableHeadData>>();
+        private static Dictionary<string, List<DataTableHeadData>> TablesData =
+            new Dictionary<string, List<DataTableHeadData>>();
 
 
         #region 创建普通表
@@ -233,6 +242,7 @@ namespace HH_ExcelFlatbufTool
             TablesData[fileName] = listCurrTableData;
 
             #region 表头
+
             DataTableDic[fileName] = dt;
             string[,] tableHeadArr = null;
 
@@ -279,9 +289,9 @@ namespace HH_ExcelFlatbufTool
                             //如果是数字 说明是列表字段
                             //检查这个字段是否已经存在
                             if (tableHeadData.TableFieldDataList.Find((DataTableFieldData data) =>
-                            {
-                                return data.FieldName == listField[0];
-                            }) == null)
+                                {
+                                    return data.FieldName == listField[0];
+                                }) == null)
                             {
                                 tableFieldData.FieldName = listField[0];
                                 tableFieldData.FieldType = dataArr[i, 1].ToLower();
@@ -292,6 +302,7 @@ namespace HH_ExcelFlatbufTool
                                     tableHeadData.TableFieldDataList.Add(tableFieldData);
                                 }
                             }
+
                             continue;
                         }
                     }
@@ -307,6 +318,7 @@ namespace HH_ExcelFlatbufTool
             }
 
             CurrTableHead.TableHeadDataList.Add(tableHeadData);
+
             #endregion
 
             #region 把表格数据赋值到通用实体上
@@ -323,6 +335,7 @@ namespace HH_ExcelFlatbufTool
                     string fieldName = tableHeadArr[j, 0];
 
                     #region 计算字段的名字
+
                     //计算字段的名字
                     if (fieldName.IndexOf("_") > 0)
                     {
@@ -336,6 +349,7 @@ namespace HH_ExcelFlatbufTool
                             }
                         }
                     }
+
                     #endregion
 
                     DataTableFieldData currData = tableHeadData.TableFieldDataList.Find((DataTableFieldData data) =>
@@ -348,10 +362,11 @@ namespace HH_ExcelFlatbufTool
                     if (currData != null)
                     {
                         //一定要再次查找
-                        DataTableFieldData data = _DataTableHeadData.TableFieldDataList.Find((DataTableFieldData data) =>
-                        {
-                            return data.FieldName == fieldName;
-                        });
+                        DataTableFieldData data =
+                            _DataTableHeadData.TableFieldDataList.Find((DataTableFieldData data) =>
+                            {
+                                return data.FieldName == fieldName;
+                            });
                         if (data == null)
                         {
                             data = new DataTableFieldData();
@@ -364,6 +379,7 @@ namespace HH_ExcelFlatbufTool
                                 _DataTableHeadData.TableFieldDataList.Add(data);
                             }
                         }
+
                         data.FieldValues.Add(value);
                     }
                 }
@@ -372,6 +388,7 @@ namespace HH_ExcelFlatbufTool
             #endregion
 
             #region 生成表格文件
+
             FlatBufferBuilder builder = new FlatBufferBuilder(1);
 
             //每行的Offset
@@ -400,7 +417,7 @@ namespace HH_ExcelFlatbufTool
                     if (_fieldData.FieldType.ToLower() == "int_1"
                         || _fieldData.FieldType.ToLower() == "float_1"
                         || _fieldData.FieldType.ToLower() == "string_1"
-                        )
+                       )
                     {
                         _fieldData.IsListField = true;
                     }
@@ -465,77 +482,82 @@ namespace HH_ExcelFlatbufTool
                         for (int m = lstValue.Count - 1; m >= 0; m--)
                         {
                             string value = lstValue[m];
+
                             #region 设置字段值
+
                             switch (type)
                             {
                                 case "bool":
-                                    bool b = (string.IsNullOrEmpty(value) || value == "假") ? false : (value == "真" ? true : bool.Parse(value));
+                                    bool b = (string.IsNullOrEmpty(value) || value == "假")
+                                        ? false
+                                        : (value == "真" ? true : bool.Parse(value));
                                     builder.AddBool(b);
                                     break;
                                 case "float":
-                                    {
-                                        float.TryParse(value, out float v);
-                                        builder.AddFloat(v);
-                                    }
+                                {
+                                    float.TryParse(value, out float v);
+                                    builder.AddFloat(v);
+                                }
                                     break;
                                 case "double":
-                                    {
-                                        double.TryParse(value, out double v);
-                                        builder.AddDouble(v);
-                                    }
+                                {
+                                    double.TryParse(value, out double v);
+                                    builder.AddDouble(v);
+                                }
                                     break;
                                 case "sbyte":
-                                    {
-                                        sbyte.TryParse(value, out sbyte v);
-                                        builder.AddSbyte(v);
-                                    }
+                                {
+                                    sbyte.TryParse(value, out sbyte v);
+                                    builder.AddSbyte(v);
+                                }
                                     break;
                                 case "byte":
-                                    {
-                                        byte.TryParse(value, out byte v);
-                                        builder.AddByte(v);
-                                    }
+                                {
+                                    byte.TryParse(value, out byte v);
+                                    builder.AddByte(v);
+                                }
                                     break;
                                 case "short":
-                                    {
-                                        short.TryParse(value, out short v);
-                                        builder.AddShort(v);
-                                    }
+                                {
+                                    short.TryParse(value, out short v);
+                                    builder.AddShort(v);
+                                }
                                     break;
                                 case "ushort":
-                                    {
-                                        ushort.TryParse(value, out ushort v);
-                                        builder.AddUshort(v);
-                                    }
+                                {
+                                    ushort.TryParse(value, out ushort v);
+                                    builder.AddUshort(v);
+                                }
                                     break;
                                 case "int":
-                                    {
-                                        int.TryParse(value, out int v);
-                                        builder.AddInt(v);
-                                    }
+                                {
+                                    int.TryParse(value, out int v);
+                                    builder.AddInt(v);
+                                }
                                     break;
                                 case "uint":
-                                    {
-                                        uint.TryParse(value, out uint v);
-                                        builder.AddUint(v);
-                                    }
+                                {
+                                    uint.TryParse(value, out uint v);
+                                    builder.AddUint(v);
+                                }
                                     break;
                                 case "ulong":
-                                    {
-                                        ulong.TryParse(value, out ulong v);
-                                        builder.AddUlong(v);
-                                    }
+                                {
+                                    ulong.TryParse(value, out ulong v);
+                                    builder.AddUlong(v);
+                                }
                                     break;
                                 case "long":
-                                    {
-                                        long.TryParse(value, out long v);
-                                        builder.AddLong(v);
-                                    }
+                                {
+                                    long.TryParse(value, out long v);
+                                    builder.AddLong(v);
+                                }
                                     break;
                                 default:
                                     builder.AddOffset(_TempColumnStringOffset[m].Value);
                                     break;
                             }
+
                             #endregion
                         }
 
@@ -557,76 +579,80 @@ namespace HH_ExcelFlatbufTool
                         string value = _fieldData.FieldValues[0];
 
                         #region 设置字段值
+
                         switch (type)
                         {
                             case "bool":
-                                bool b = (string.IsNullOrEmpty(value) || value == "假") ? false : (value == "真" ? true : bool.Parse(value));
+                                bool b = (string.IsNullOrEmpty(value) || value == "假")
+                                    ? false
+                                    : (value == "真" ? true : bool.Parse(value));
                                 builder.AddBool(j, b, false);
                                 break;
                             case "float":
-                                {
-                                    float.TryParse(value, out float v);
-                                    builder.AddFloat(j, v, 0);
-                                }
+                            {
+                                float.TryParse(value, out float v);
+                                builder.AddFloat(j, v, 0);
+                            }
                                 break;
                             case "double":
-                                {
-                                    double.TryParse(value, out double v);
-                                    builder.AddDouble(j, v, 0);
-                                }
+                            {
+                                double.TryParse(value, out double v);
+                                builder.AddDouble(j, v, 0);
+                            }
                                 break;
                             case "sbyte":
-                                {
-                                    sbyte.TryParse(value, out sbyte v);
-                                    builder.AddSbyte(j, v, 0);
-                                }
+                            {
+                                sbyte.TryParse(value, out sbyte v);
+                                builder.AddSbyte(j, v, 0);
+                            }
                                 break;
                             case "byte":
-                                {
-                                    byte.TryParse(value, out byte v);
-                                    builder.AddByte(j, v, 0);
-                                }
+                            {
+                                byte.TryParse(value, out byte v);
+                                builder.AddByte(j, v, 0);
+                            }
                                 break;
                             case "short":
-                                {
-                                    short.TryParse(value, out short v);
-                                    builder.AddShort(j, v, 0);
-                                }
+                            {
+                                short.TryParse(value, out short v);
+                                builder.AddShort(j, v, 0);
+                            }
                                 break;
                             case "ushort":
-                                {
-                                    ushort.TryParse(value, out ushort v);
-                                    builder.AddUshort(j, v, 0);
-                                }
+                            {
+                                ushort.TryParse(value, out ushort v);
+                                builder.AddUshort(j, v, 0);
+                            }
                                 break;
                             case "int":
-                                {
-                                    int.TryParse(value, out int v);
-                                    builder.AddInt(j, v, 0);
-                                }
+                            {
+                                int.TryParse(value, out int v);
+                                builder.AddInt(j, v, 0);
+                            }
                                 break;
                             case "uint":
-                                {
-                                    uint.TryParse(value, out uint v);
-                                    builder.AddUint(j, v, 0);
-                                }
+                            {
+                                uint.TryParse(value, out uint v);
+                                builder.AddUint(j, v, 0);
+                            }
                                 break;
                             case "ulong":
-                                {
-                                    ulong.TryParse(value, out ulong v);
-                                    builder.AddUlong(j, v, 0);
-                                }
+                            {
+                                ulong.TryParse(value, out ulong v);
+                                builder.AddUlong(j, v, 0);
+                            }
                                 break;
                             case "long":
-                                {
-                                    long.TryParse(value, out long v);
-                                    builder.AddLong(j, v, 0);
-                                }
+                            {
+                                long.TryParse(value, out long v);
+                                builder.AddLong(j, v, 0);
+                            }
                                 break;
                             default:
                                 builder.AddOffset(j, m_ColumnStringOffset[j].Value, 0);
                                 break;
                         }
+
                         #endregion
                     }
                     else
@@ -646,6 +672,7 @@ namespace HH_ExcelFlatbufTool
             {
                 builder.AddOffset(m_Offset[i]);
             }
+
             var offset = builder.EndVector();
             //=================得到偏移
 
@@ -666,7 +693,10 @@ namespace HH_ExcelFlatbufTool
                     {
                         Directory.CreateDirectory(Config.ClientOutBytesFilePath);
                     }
-                    FileStream fs = new FileStream(string.Format("{0}/{1}", Config.ClientOutBytesFilePath, fileName + ".bytes"), FileMode.Create);
+
+                    FileStream fs =
+                        new FileStream(string.Format("{0}/{1}", Config.ClientOutBytesFilePath, fileName + ".bytes"),
+                            FileMode.Create);
                     fs.Write(buffer, 0, buffer.Length);
                     fs.Close();
 
@@ -681,13 +711,17 @@ namespace HH_ExcelFlatbufTool
                     {
                         Directory.CreateDirectory(Config.ServerOutBytesFilePath);
                     }
-                    FileStream fs = new FileStream(string.Format("{0}/{1}", Config.ServerOutBytesFilePath, fileName + ".bytes"), FileMode.Create);
+
+                    FileStream fs =
+                        new FileStream(string.Format("{0}/{1}", Config.ServerOutBytesFilePath, fileName + ".bytes"),
+                            FileMode.Create);
                     fs.Write(buffer, 0, buffer.Length);
                     fs.Close();
 
                     Console.WriteLine("服务器端表格=>" + fileName + " 生成bytes文件完毕");
                 }
             }
+
             #endregion
 
             CreateClientLuaEntity(fileName, tableHeadArr, dt);
@@ -705,12 +739,12 @@ namespace HH_ExcelFlatbufTool
 
         private static void CreateClientCSharpExt(string fileName, string[,] dataArr)
         {
-            DataTableHeadData currTable =
-CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.TableName == fileName; });
+            var currTable =
+                CurrTableHead.TableHeadDataList.Find(data => data.TableName == fileName);
 
-            List<DataTableFieldData> lstFields = currTable.TableFieldDataList;
+            var lstFields = currTable.TableFieldDataList;
 
-            StringBuilder sbr = new StringBuilder();
+            var sbr = new StringBuilder();
             //=======================CreateClientCSharpExt
             sbr.AppendFormat("using FlatBuffers;\r\n");
             sbr.AppendFormat("using System.Collections.Generic;\r\n");
@@ -718,11 +752,18 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbr.AppendFormat("using HHFramework.DataTable;\r\n");
             sbr.AppendFormat("\r\n");
             sbr.AppendFormat("/// <summary>\r\n");
-            sbr.AppendFormat("/// Create By HHFramework HH_ExcelFlatbufTool{0}\r\n", userInfo.Trim());
+            sbr.AppendFormat("/// Create By HHFramework HH_ExcelFlatBufTool{0}\r\n", userInfo.Trim());
             sbr.AppendFormat("/// </summary>\r\n");
+            var tableListItem = Config.LuaTableList.Find(item => item.TableName == fileName);
+            if (tableListItem is { LoadType: 1 })
+            {
+                sbr.AppendFormat("[XLua.LuaCallCSharp]\r\n");
+            }
+
             sbr.AppendFormat("public static partial class {0}ListExt\r\n", fileName);
             sbr.AppendFormat("{{\r\n");
-            sbr.AppendFormat("    private static Dictionary<int, {0}?> mDic = new Dictionary<int, {0}?>();\r\n", fileName);
+            sbr.AppendFormat("    private static Dictionary<int, {0}?> mDic = new Dictionary<int, {0}?>();\r\n",
+                fileName);
             sbr.AppendFormat("    private static List<{0}> mList = new List<{0}>();\r\n", fileName);
             sbr.AppendFormat("\r\n");
             sbr.AppendFormat("    #region LoadData 加载数据表数据\r\n");
@@ -734,7 +775,9 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbr.AppendFormat("        GameEntry.DataTable.TotalTableCount++;\r\n");
             sbr.AppendFormat("\r\n");
             sbr.AppendFormat("        //1.拿到这个表格的buffer\r\n");
-            sbr.AppendFormat("        GameEntry.DataTable.GetDataTableBuffer(DataTableDefine.{0}Name, (byte[] buffer) =>\r\n", fileName);
+            sbr.AppendFormat(
+                "        GameEntry.DataTable.GetDataTableBuffer(DataTableDefine.{0}Name, (byte[] buffer) =>\r\n",
+                fileName);
             sbr.AppendFormat("        {{\r\n");
             sbr.AppendFormat("            //2.加载数据 并 把数据初始化到字典\r\n");
             sbr.AppendFormat("            Init({0}List.GetRootAs{0}List(new ByteBuffer(buffer)));\r\n", fileName);
@@ -748,10 +791,12 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbr.AppendFormat("    public static void Init({0}List {1}List)\r\n", fileName, fileName.ToLower());
             sbr.AppendFormat("    {{\r\n");
             sbr.AppendFormat("        System.Threading.Tasks.Task.Run(() => {{\r\n");
-            sbr.AppendFormat("            int len = {0}List.{1}sLength;\r\n", fileName.ToLower(), fileName.Replace("_", ""));
+            sbr.AppendFormat("            int len = {0}List.{1}sLength;\r\n", fileName.ToLower(),
+                fileName.Replace("_", ""));
             sbr.AppendFormat("            for (int j = 0; j < len; j++)\r\n");
             sbr.AppendFormat("            {{\r\n");
-            sbr.AppendFormat("                {0} ? {1} = {1}List.{2}s(j);\r\n", fileName, fileName.ToLower(), fileName.Replace("_", ""));
+            sbr.AppendFormat("                {0} ? {1} = {1}List.{2}s(j);\r\n", fileName, fileName.ToLower(),
+                fileName.Replace("_", ""));
             sbr.AppendFormat("                if ({0} != null)\r\n", fileName.ToLower());
             sbr.AppendFormat("                {{\r\n");
             sbr.AppendFormat("                    mList.Add({0}.Value);\r\n", fileName.ToLower());
@@ -760,8 +805,12 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbr.AppendFormat("            }}\r\n");
             sbr.AppendFormat("\r\n");
             sbr.AppendFormat("            //3.派发单个表加载完毕事件\r\n");
-            sbr.AppendFormat("            GameEntry.DataTable.AddToAlreadyLoadTable(DataTableDefine.{0}Name, DataTableDefine.{0}Version);\r\n", fileName);
-            sbr.AppendFormat("            GameEntry.Event.CommonEvent.Dispatch(SysEventId.LoadOneDataTableComplete, DataTableDefine.{0}Name);\r\n", fileName);
+            sbr.AppendFormat(
+                "            GameEntry.DataTable.AddToAlreadyLoadTable(DataTableDefine.{0}Name, DataTableDefine.{0}Version);\r\n",
+                fileName);
+            sbr.AppendFormat(
+                "            GameEntry.Event.CommonEvent.Dispatch(SysEventId.LoadOneDataTableComplete, DataTableDefine.{0}Name);\r\n",
+                fileName);
             sbr.AppendFormat("        }});\r\n");
             sbr.AppendFormat("    }}\r\n");
             sbr.AppendFormat("\r\n");
@@ -770,7 +819,8 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbr.AppendFormat("    /// </summary>\r\n");
             sbr.AppendFormat("    /// <param name=\"id\"></param>\r\n");
             sbr.AppendFormat("    /// <returns></returns>\r\n");
-            sbr.AppendFormat("    public static {0}? GetEntity(this {0}List {1}List, int id)\r\n", fileName, fileName.ToLower());
+            sbr.AppendFormat("    public static {0}? GetEntity(this {0}List {1}List, int id)\r\n", fileName,
+                fileName.ToLower());
             sbr.AppendFormat("    {{\r\n");
             sbr.AppendFormat("        {0} ? {1};\r\n", fileName, fileName.ToLower());
             sbr.AppendFormat("        mDic.TryGetValue(id, out {0});\r\n", fileName.ToLower());
@@ -783,7 +833,8 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbr.AppendFormat("    /// </summary>\r\n");
             sbr.AppendFormat("    /// <param name=\"id\"></param>\r\n");
             sbr.AppendFormat("    /// <returns></returns>\r\n");
-            sbr.AppendFormat("    public static {0} GetEntityValue(this {0}List {1}List, int id)\r\n", fileName, fileName.ToLower());
+            sbr.AppendFormat("    public static {0} GetEntityValue(this {0}List {1}List, int id)\r\n", fileName,
+                fileName.ToLower());
             sbr.AppendFormat("    {{\r\n");
             sbr.AppendFormat("        {0} ? {1} = {1}List.GetEntity(id);\r\n", fileName, fileName.ToLower());
             sbr.AppendFormat("        if ({0} != null)\r\n", fileName.ToLower());
@@ -797,31 +848,29 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbr.AppendFormat("    /// 获取列表\r\n");
             sbr.AppendFormat("    /// </summary>\r\n");
             sbr.AppendFormat("    /// <returns></returns>\r\n");
-            sbr.AppendFormat("    public static List<{0}> GetList(this {0}List {1}List)\r\n", fileName, fileName.ToLower());
+            sbr.AppendFormat("    public static List<{0}> GetList(this {0}List {1}List)\r\n", fileName,
+                fileName.ToLower());
             sbr.AppendFormat("    {{\r\n");
             sbr.AppendFormat("        return mList;\r\n");
             sbr.AppendFormat("    }}\r\n");
             sbr.AppendFormat("}}");
-            if (Config.CSharpTableList.Find((TableListItem item) => item.TableName == fileName) != null)
+            if (Config.CSharpTableList.Find(item => item.TableName == fileName) != null)
             {
-                string path = string.Format("{0}/{1}ListExt.cs", Config.ClientOutCSharpFilePath, fileName);
+                var path = $"{Config.ClientOutCSharpFilePath}/{fileName}ListExt.cs";
                 if (!Directory.Exists(Config.ClientOutCSharpFilePath))
                 {
                     Directory.CreateDirectory(Config.ClientOutCSharpFilePath);
                 }
-                using (FileStream fs = new FileStream(path, FileMode.Create))
-                {
-                    using (StreamWriter sw = new StreamWriter(fs))
-                    {
-                        sw.Write(sbr.ToString());
-                    }
-                }
+
+                using var fs = new FileStream(path, FileMode.Create);
+                using var sw = new StreamWriter(fs);
+                sw.Write(sbr.ToString());
             }
         }
 
         private static void CreateServerCSharpExt(string fileName, string[,] dataArr)
         {
-            StringBuilder sbr = new StringBuilder();
+            var sbr = new StringBuilder();
             //=======================CreateClientCSharpExt
             sbr.AppendFormat("using FlatBuffers;\r\n");
             sbr.AppendFormat("using System.Collections.Generic;\r\n");
@@ -831,20 +880,24 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbr.AppendFormat("namespace HHFramework.DataTable\r\n");
             sbr.AppendFormat("{{\r\n");
             sbr.AppendFormat("/// <summary>\r\n");
-            sbr.AppendFormat("/// Create By HH_ExcelFlatbufTool {0}\r\n", userInfo.Trim());
+            sbr.AppendFormat("/// Create By HH_ExcelFlatBufTool {0}\r\n", userInfo.Trim());
             sbr.AppendFormat("/// </summary>\r\n");
             sbr.AppendFormat("    public static partial class {0}ListExt\r\n", fileName);
             sbr.AppendFormat("    {{\r\n");
-            sbr.AppendFormat("        private static Dictionary<int, {0}?> mDic = new Dictionary<int, {0}?>();\r\n", fileName);
+            sbr.AppendFormat("        private static Dictionary<int, {0}?> mDic = new Dictionary<int, {0}?>();\r\n",
+                fileName);
             sbr.AppendFormat("        private static List<{0}> mList = new List<{0}>();\r\n", fileName);
             sbr.AppendFormat("\r\n");
             sbr.AppendFormat("        #region LoadData 加载数据表数据\r\n");
             sbr.AppendFormat("        /// <summary>\r\n");
             sbr.AppendFormat("        /// 加载数据表数据\r\n");
             sbr.AppendFormat("        /// </summary>\r\n");
-            sbr.AppendFormat("        public static void LoadData(this {0}List {1}List)\r\n", fileName, fileName.ToLower());
+            sbr.AppendFormat("        public static void LoadData(this {0}List {1}List)\r\n", fileName,
+                fileName.ToLower());
             sbr.AppendFormat("        {{\r\n");
-            sbr.AppendFormat("            byte[] buffer = HHIOUtil.GetBuffer(ServerConfig.DataTablePath + \"/{0}.bytes\", true);\r\n", fileName);
+            sbr.AppendFormat(
+                "            byte[] buffer = HHIOUtil.GetBuffer(ServerConfig.DataTablePath + \"/{0}.bytes\", true);\r\n",
+                fileName);
             sbr.AppendFormat("            Init({0}List.GetRootAs{0}List(new ByteBuffer(buffer)));\r\n", fileName);
             sbr.AppendFormat("        }}\r\n");
             sbr.AppendFormat("        #endregion\r\n");
@@ -854,10 +907,12 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbr.AppendFormat("        /// </summary>\r\n");
             sbr.AppendFormat("        public static void Init({0}List {1}List)\r\n", fileName, fileName.ToLower());
             sbr.AppendFormat("        {{\r\n");
-            sbr.AppendFormat("            int len = {0}List.{1}sLength;\r\n", fileName.ToLower(), fileName.Replace("_", ""));
+            sbr.AppendFormat("            int len = {0}List.{1}sLength;\r\n", fileName.ToLower(),
+                fileName.Replace("_", ""));
             sbr.AppendFormat("            for (int j = 0; j < len; j++)\r\n");
             sbr.AppendFormat("            {{\r\n");
-            sbr.AppendFormat("                {0} ? {1} = {1}List.{2}s(j);\r\n", fileName, fileName.ToLower(), fileName.Replace("_", ""));
+            sbr.AppendFormat("                {0} ? {1} = {1}List.{2}s(j);\r\n", fileName, fileName.ToLower(),
+                fileName.Replace("_", ""));
             sbr.AppendFormat("                if ({0} != null)\r\n", fileName.ToLower());
             sbr.AppendFormat("                {{\r\n");
             sbr.AppendFormat("                    mList.Add({0}.Value);\r\n", fileName.ToLower());
@@ -871,7 +926,8 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbr.AppendFormat("        /// </summary>\r\n");
             sbr.AppendFormat("        /// <param name=\"id\"></param>\r\n");
             sbr.AppendFormat("        /// <returns></returns>\r\n");
-            sbr.AppendFormat("        public static {0}? GetEntity(this {0}List {1}List, int id)\r\n", fileName, fileName.ToLower());
+            sbr.AppendFormat("        public static {0}? GetEntity(this {0}List {1}List, int id)\r\n", fileName,
+                fileName.ToLower());
             sbr.AppendFormat("        {{\r\n");
             sbr.AppendFormat("            {0} ? {1};\r\n", fileName, fileName.ToLower());
             sbr.AppendFormat("            mDic.TryGetValue(id, out {0});\r\n", fileName.ToLower());
@@ -884,7 +940,8 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbr.AppendFormat("        /// </summary>\r\n");
             sbr.AppendFormat("        /// <param name=\"id\"></param>\r\n");
             sbr.AppendFormat("        /// <returns></returns>\r\n");
-            sbr.AppendFormat("        public static {0} GetEntityValue(this {0}List {1}List, int id)\r\n", fileName, fileName.ToLower());
+            sbr.AppendFormat("        public static {0} GetEntityValue(this {0}List {1}List, int id)\r\n", fileName,
+                fileName.ToLower());
             sbr.AppendFormat("        {{\r\n");
             sbr.AppendFormat("            {0} ? {1} = {1}List.GetEntity(id);\r\n", fileName, fileName.ToLower());
             sbr.AppendFormat("            if ({0} != null)\r\n", fileName.ToLower());
@@ -898,13 +955,14 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbr.AppendFormat("        /// 获取列表\r\n");
             sbr.AppendFormat("        /// </summary>\r\n");
             sbr.AppendFormat("        /// <returns></returns>\r\n");
-            sbr.AppendFormat("        public static List<{0}> GetList(this {0}List {1}List)\r\n", fileName, fileName.ToLower());
+            sbr.AppendFormat("        public static List<{0}> GetList(this {0}List {1}List)\r\n", fileName,
+                fileName.ToLower());
             sbr.AppendFormat("        {{\r\n");
             sbr.AppendFormat("            return mList;\r\n");
             sbr.AppendFormat("        }}\r\n");
             sbr.AppendFormat("    }}\r\n");
             sbr.AppendFormat("}}");
-            if (Config.CSharpTableList.Find((TableListItem item) => item.TableName == fileName) != null)
+            if (Config.CSharpTableList.Find(item => item.TableName == fileName) != null)
             {
                 if (!string.IsNullOrEmpty(Config.ServerOutCSharpFilePath))
                 {
@@ -919,6 +977,7 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
                     {
                         Directory.CreateDirectory(Config.ServerOutCSharpFilePath);
                     }
+
                     if (!File.Exists(path))
                     {
                         using (FileStream fs = new FileStream(path, FileMode.Create))
@@ -934,6 +993,7 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
         }
 
         #region Lua
+
         /// <summary>
         /// 创建客户端Lua实体
         /// </summary>
@@ -941,14 +1001,17 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
         {
             if (dataArr == null) return;
 
-            StringBuilder sbr = new StringBuilder();
+            var sbr = new StringBuilder();
             //=======================创建Lua的实体
             sbr.Clear();
-            sbr.AppendFormat("-- Create By HH_ExcelFlatbufTool\r\n");
+            sbr.AppendFormat("-- Create By HH_ExcelFlatBufTool\r\n");
             sbr.AppendFormat("{0}Entity = {{ ", fileName);
 
             DataTableHeadData currTable =
-            CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.TableName == fileName; });
+                CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) =>
+                {
+                    return data.TableName == fileName;
+                });
 
             List<DataTableFieldData> lstFields = currTable.TableFieldDataList;
             for (int i = 0; i < lstFields.Count; i++)
@@ -1026,6 +1089,7 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
                     }
                 }
             }
+
             sbr.Append(" }\r\n");
 
             sbr.Append("\r\n");
@@ -1046,6 +1110,7 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
                     sbr.AppendFormat("{0}, ", fieldData.FieldName);
                 }
             }
+
             sbr.Append(")\r\n");
             sbr.Append("    local self = { }\r\n");
             sbr.Append("");
@@ -1056,6 +1121,7 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
                 DataTableFieldData fieldData = lstFields[i];
                 sbr.AppendFormat("    self.{0} = {0}\r\n", fieldData.FieldName);
             }
+
             sbr.Append("\r\n");
             sbr.Append("    return self\r\n");
             sbr.Append("end\r\n");
@@ -1070,6 +1136,7 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
                 DataTableFieldData fieldData = lstFields[i];
                 sbr.AppendFormat("    self.{0} = item[{1}]\r\n", fieldData.FieldName, i + 1);
             }
+
             sbr.Append("\r\n");
             sbr.Append("    return self\r\n");
             sbr.Append("end\r\n");
@@ -1116,9 +1183,9 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
 
 
                     if (dataTableFieldData.FieldType.ToLower() == "int_1"
-    || dataTableFieldData.FieldType.ToLower() == "float_1"
-    || dataTableFieldData.FieldType.ToLower() == "string_1"
-    )
+                        || dataTableFieldData.FieldType.ToLower() == "float_1"
+                        || dataTableFieldData.FieldType.ToLower() == "string_1"
+                       )
                     {
                         dataTableFieldData.IsListField = false;
                     }
@@ -1184,132 +1251,43 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
                                 bool b = (string.IsNullOrEmpty(value) || value == "假")
                                     ? false
                                     : (value == "真" ? true : bool.Parse(value));
-                                str += string.Format("{0}, ", b);
+                                str += $"{b}, ";
                                 break;
                             case "int_1":
+                            {
+                                // 一纬数据拆解
+                                var arr = value.Split(":");
+                                str += "{";
+                                foreach (var item in arr)
                                 {
-                                    //一纬数据拆解
-                                    string[] arr = value.Split(":");
-                                    str += "{";
-                                    foreach (var item in arr)
-                                    {
-                                        int itemValue = 0;
-                                        int.TryParse(item, out itemValue);
-                                        str += string.Format("{0},", itemValue);
-                                    }
-
-                                    str = str.TrimEnd(',');
-                                    str += "}, ";
+                                    int.TryParse(item, out var itemValue);
+                                    str += $"{itemValue},";
                                 }
+
+                                str = str.TrimEnd(',');
+                                str += "}, ";
+                            }
                                 break;
                             case "int_2":
+                            {
+                                if (string.IsNullOrEmpty(value))
                                 {
-                                    if (string.IsNullOrEmpty(value))
-                                    {
-                                        str += "{},";
-                                    }
-                                    else
-                                    {
-                                        //二维数据拆解
-                                        string[] arr1 = value.Split(",");
-                                        str += "{";
-
-                                        foreach (var item1 in arr1)
-                                        {
-                                            str += "{";
-                                            string[] arr2 = item1.Split(":");
-                                            foreach (var item2 in arr2)
-                                            {
-                                                int itemValue = 0;
-                                                int.TryParse(item2, out itemValue);
-                                                str += string.Format("{0},", itemValue);
-                                            }
-
-                                            str = str.TrimEnd(',');
-                                            str += "},";
-                                        }
-
-                                        str = str.TrimEnd(',');
-                                        str += "}, ";
-                                    }
+                                    str += "{},";
                                 }
-                                break;
-                            case "float_1":
+                                else
                                 {
-                                    //一纬数据拆解
-                                    string[] arr = value.Split(":");
-                                    str += "{";
-                                    foreach (var item in arr)
-                                    {
-                                        float itemValue = 0;
-                                        float.TryParse(item, out itemValue);
-                                        str += string.Format("{0},", itemValue);
-                                    }
-
-                                    str = str.TrimEnd(',');
-                                    str += "}, ";
-                                }
-                                break;
-                            case "float_2":
-                                {
-                                    if (string.IsNullOrEmpty(value))
-                                    {
-                                        str += "{},";
-                                    }
-                                    else
-                                    {
-                                        //二维数据拆解
-                                        string[] arr1 = value.Split(",");
-                                        str += "{";
-
-                                        foreach (var item1 in arr1)
-                                        {
-                                            str += "{";
-                                            string[] arr2 = item1.Split(":");
-                                            foreach (var item2 in arr2)
-                                            {
-                                                float itemValue = 0;
-                                                float.TryParse(item2, out itemValue);
-                                                str += string.Format("{0},", itemValue);
-                                            }
-
-                                            str = str.TrimEnd(',');
-                                            str += "},";
-                                        }
-
-                                        str = str.TrimEnd(',');
-                                        str += "}, ";
-                                    }
-                                }
-                                break;
-
-                            case "string_1":
-                                {
-                                    //一纬数据拆解
-                                    string[] arr = value.Split(":");
-                                    str += "{";
-                                    foreach (var item in arr)
-                                    {
-                                        str += string.Format("\"{0}\",", item);
-                                    }
-
-                                    str = str.TrimEnd(',');
-                                    str += "}";
-                                }
-                                break;
-                            case "string_2":
-                                {
-                                    //二维数据拆解
-                                    string[] arr1 = value.Split(",");
+                                    // 二维数据拆解
+                                    var arr1 = value.Split(",");
                                     str += "{";
 
                                     foreach (var item1 in arr1)
                                     {
                                         str += "{";
-                                        string[] arr2 = item1.Split(":");
+                                        var arr2 = item1.Split(":");
                                         foreach (var item2 in arr2)
                                         {
-                                            str += string.Format("\"{0}\",", item2);
+                                            int.TryParse(item2, out var itemValue);
+                                            str += $"{itemValue},";
                                         }
 
                                         str = str.TrimEnd(',');
@@ -1317,11 +1295,96 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
                                     }
 
                                     str = str.TrimEnd(',');
-                                    str += "}";
+                                    str += "}, ";
                                 }
+                            }
+                                break;
+                            case "float_1":
+                            {
+                                // 一纬数据拆解
+                                var arr = value.Split(":");
+                                str += "{";
+                                foreach (var item in arr)
+                                {
+                                    float.TryParse(item, out var itemValue);
+                                    str += $"{itemValue},";
+                                }
+
+                                str = str.TrimEnd(',');
+                                str += "}, ";
+                            }
+                                break;
+                            case "float_2":
+                            {
+                                if (string.IsNullOrEmpty(value))
+                                {
+                                    str += "{},";
+                                }
+                                else
+                                {
+                                    // 二维数据拆解
+                                    var arr1 = value.Split(",");
+                                    str += "{";
+
+                                    foreach (var item1 in arr1)
+                                    {
+                                        str += "{";
+                                        var arr2 = item1.Split(":");
+                                        foreach (var item2 in arr2)
+                                        {
+                                            float.TryParse(item2, out var itemValue);
+                                            str += $"{itemValue},";
+                                        }
+
+                                        str = str.TrimEnd(',');
+                                        str += "},";
+                                    }
+
+                                    str = str.TrimEnd(',');
+                                    str += "}, ";
+                                }
+                            }
+                                break;
+
+                            case "string_1":
+                            {
+                                //一纬数据拆解
+                                var arr = value.Split(":");
+                                str += "{";
+                                foreach (var item in arr)
+                                {
+                                    str += $"\"{item}\",";
+                                }
+
+                                str = str.TrimEnd(',');
+                                str += "}";
+                            }
+                                break;
+                            case "string_2":
+                            {
+                                // 二维数据拆解
+                                var arr1 = value.Split(",");
+                                str += "{";
+
+                                foreach (var item1 in arr1)
+                                {
+                                    str += "{";
+                                    var arr2 = item1.Split(":");
+                                    foreach (var item2 in arr2)
+                                    {
+                                        str += $"\"{item2}\",";
+                                    }
+
+                                    str = str.TrimEnd(',');
+                                    str += "},";
+                                }
+
+                                str = str.TrimEnd(',');
+                                str += "}";
+                            }
                                 break;
                             default:
-                                str += string.Format("\"{0}\", ", value);
+                                str += $"\"{value}\", ";
                                 break;
                         }
                     }
@@ -1347,13 +1410,12 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
                 {
                     Directory.CreateDirectory(Config.ClientOutLuaFilePath);
                 }
-                using (FileStream fs = new FileStream(string.Format("{0}/{1}Entity.bytes", Config.ClientOutLuaFilePath, fileName), FileMode.Create))
-                {
-                    using (StreamWriter sw = new StreamWriter(fs))
-                    {
-                        sw.Write(sbr.ToString());
-                    }
-                }
+
+                using var fs =
+                    new FileStream($"{Config.ClientOutLuaFilePath}/{fileName}Entity.bytes",
+                        FileMode.Create);
+                using var sw = new StreamWriter(fs);
+                sw.Write(sbr.ToString());
             }
         }
 
@@ -1364,171 +1426,184 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
         {
             if (dataArr == null) return;
 
-            StringBuilder sbr = new StringBuilder();
+            var sbr = new StringBuilder();
             //===============生成lua的DBModel
-            TableListItem tableListItem = Config.LuaTableList.Find((TableListItem item) => item.TableName == fileName);
+            var tableListItem = Config.LuaTableList.Find(item => item.TableName == fileName);
             if (tableListItem == null)
             {
                 return;
             }
 
-            DataTableHeadData currTable =
-CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.TableName == fileName; });
+            var currTable =
+                CurrTableHead.TableHeadDataList.Find(data => data.TableName == fileName);
 
-            List<DataTableFieldData> lstFields = currTable.TableFieldDataList;
-
-            sbr.Clear();
-
-            sbr.AppendFormat("-- Create By HH_ExcelFlatbufTool\r\n");
-            sbr.AppendFormat("{0}DBModel = {{ }}\r\n", fileName);
-            sbr.Append("\r\n");
-            sbr.AppendFormat("local this = {0}DBModel\r\n", fileName);
-            sbr.Append("\r\n");
-            sbr.AppendFormat("local {0}Table = {{ }}; --定义表格\r\n", fileName.ToLower());
-            sbr.AppendFormat("local {0}TableDic = {{ }}; --定义表格字典\r\n", fileName.ToLower());
-            sbr.Append("\r\n");
-            sbr.AppendFormat("local dataTableName = \"{0}\"\r\n", fileName);
-            sbr.AppendFormat("local currColumns = {0}\r\n", lstFields.Count);
-            sbr.AppendFormat("local isAlreadyLoadTableInCSharp = false\r\n");
-            sbr.AppendFormat("local lastUseTime = 0\r\n");
-            sbr.AppendFormat("local loadType = {0}; --读取方式0=从lua文件读取 1=从c#已有数据加载\r\n", tableListItem.LoadType);
-            sbr.Append("\r\n");
-            sbr.AppendFormat("function {0}DBModel.LoadList()\r\n", fileName);
-            sbr.AppendFormat("    if (loadType == 0) then\r\n");
-            sbr.AppendFormat("        local arr = {0}Entity.GetArr()\r\n", fileName);
-            sbr.AppendFormat("        for i = 1, arr.Len do\r\n");
-            sbr.AppendFormat("            local item = arr.ByIdx[i]; --拿到索引数据\r\n");
-            sbr.AppendFormat("            local {0}Entity = {1}Entity.NewFromArrItem(item)\r\n", fileName.ToLower(), fileName);
-            sbr.AppendFormat("            {0}Table[#{0}Table + 1] = {0}Entity\r\n", fileName.ToLower());
-            sbr.AppendFormat("            {0}TableDic[{0}Entity.Id] = {0}Entity\r\n", fileName.ToLower());
-            sbr.AppendFormat("        end\r\n");
-            sbr.AppendFormat("        GameInit.LoadOneTableComplete()\r\n");
-            sbr.AppendFormat("    else\r\n");
-            sbr.AppendFormat("        --检查这个表在c#中是否已经加载\r\n");
-            sbr.AppendFormat("        if (GameEntry.DataTable:CheckAlreadyLoadTable(dataTableName, currColumns)) then\r\n");
-            sbr.AppendFormat("            isAlreadyLoadTableInCSharp = true\r\n");
-            sbr.AppendFormat("            GameInit.LoadOneTableComplete()\r\n");
-            sbr.AppendFormat("        else\r\n");
-            sbr.AppendFormat("            print(\"table load fail\"..dataTableName)\r\n");
-            sbr.AppendFormat("            GameInit.LoadOneTableComplete()\r\n");
-            sbr.AppendFormat("        end\r\n");
-            sbr.AppendFormat("    end\r\n");
-            sbr.AppendFormat("end\r\n");
-            sbr.Append("\r\n");
-            sbr.AppendFormat("function {0}DBModel.GetList()\r\n", fileName);
-            sbr.AppendFormat("    --如果和c#不一致 说明自己会加载\r\n");
-            sbr.AppendFormat("    if (isAlreadyLoadTableInCSharp == false) then\r\n");
-            sbr.AppendFormat("        return {0}Table\r\n", fileName.ToLower());
-            sbr.AppendFormat("    end\r\n");
-            sbr.AppendFormat("\r\n");
-            sbr.AppendFormat("    lastUseTime = Time.time\r\n");
-            sbr.AppendFormat("    --循环c#的表\r\n");
-            sbr.AppendFormat("    local lstCSharp = GameEntry.DataTable.{0}List:GetList()\r\n", fileName);
-            sbr.AppendFormat("    local len = lstCSharp.Count - 1\r\n");
-            sbr.AppendFormat("    local {0}EntityCSharp = nil\r\n", fileName.ToLower());
-            sbr.AppendFormat("    local {0}Entity = nil\r\n", fileName.ToLower());
-            sbr.AppendFormat("\r\n");
-            sbr.AppendFormat("    for i = 0, len, 1 do\r\n");
-            sbr.AppendFormat("        {0}EntityCSharp = lstCSharp[i]\r\n", fileName.ToLower());
-            sbr.AppendFormat("        {0}Entity = this.GetEntityFromCSharp({0}EntityCSharp.Id, {0}EntityCSharp)\r\n", fileName.ToLower());
-            sbr.AppendFormat("        this.AddToTable({0}Entity)\r\n", fileName.ToLower());
-            sbr.AppendFormat("    end\r\n");
-
-            sbr.AppendFormat("    lstCSharp = nil\r\n");
-            sbr.AppendFormat("    len = nil\r\n");
-            sbr.AppendFormat("    {0}EntityCSharp = nil\r\n", fileName.ToLower());
-            sbr.AppendFormat("    {0}Entity = nil\r\n", fileName.ToLower());
-            sbr.AppendFormat("\r\n");
-            sbr.AppendFormat("    return {0}Table\r\n", fileName.ToLower());
-            sbr.AppendFormat("end\r\n");
-
-            sbr.Append("\r\n");
-            sbr.AppendFormat("function {0}DBModel.GetEntity(id)\r\n", fileName);
-            sbr.AppendFormat("    local ret = this.GetEntityInner(id)\r\n");
-            sbr.AppendFormat("    lastUseTime = Time.time\r\n");
-            sbr.AppendFormat("\r\n");
-            sbr.AppendFormat("    --如果在lua中存在 或者和c#不一致 直接返回\r\n");
-            sbr.AppendFormat("    if (ret ~= nil or isAlreadyLoadTableInCSharp == false) then\r\n");
-            sbr.AppendFormat("        return ret\r\n");
-            sbr.AppendFormat("    end\r\n");
-            sbr.AppendFormat("\r\n");
-            sbr.AppendFormat("    --去c#中查询\r\n");
-            sbr.AppendFormat("    ret = this.GetEntityFromCSharp(id)\r\n");
-            sbr.AppendFormat("    if (ret ~= nil) then\r\n");
-            sbr.AppendFormat("        this.AddToTable(ret)\r\n");
-            sbr.AppendFormat("    end\r\n");
-            sbr.AppendFormat("    return ret\r\n");
-            sbr.AppendFormat("end\r\n");
-            sbr.Append("\r\n");
-            sbr.AppendFormat("function {0}DBModel.GetEntityInner(id)\r\n", fileName);
-            sbr.AppendFormat("    return {0}TableDic[id]\r\n", fileName.ToLower());
-            sbr.AppendFormat("end\r\n");
-            sbr.Append("\r\n");
-            sbr.AppendFormat("function {0}DBModel.AddToTable(entity)\r\n", fileName);
-            sbr.AppendFormat("    if (this.GetEntityInner(entity.Id) == nil) then\r\n");
-            sbr.AppendFormat("        {0}Table[#{0}Table + 1] = entity\r\n", fileName.ToLower());
-            sbr.AppendFormat("        {0}TableDic[entity.Id] = entity\r\n", fileName.ToLower());
-            sbr.AppendFormat("    end\r\n");
-            sbr.AppendFormat("end\r\n");
-            sbr.Append("\r\n");
-            sbr.AppendFormat("function {0}DBModel.GetEntityFromCSharp(id, cSharpEntity)\r\n", fileName);
-            sbr.AppendFormat("    local {0}EntityCSharp = (cSharpEntity ~= nil and cSharpEntity or GameEntry.DataTable.{1}List:GetEntityValue(id))\r\n", fileName.ToLower(), fileName);
-            sbr.AppendFormat("    if ({0}EntityCSharp == nil) then\r\n", fileName.ToLower());
-            sbr.AppendFormat("        return nil\r\n");
-            sbr.AppendFormat("    end\r\n");
-            sbr.AppendFormat("\r\n");
-            sbr.AppendFormat("    local {0}Entity = nil\r\n", fileName.ToLower());
-            sbr.AppendFormat("    if(cSharpEntity ~= nil) then\r\n");
-            sbr.AppendFormat("        --说明是通过循环列表时候获取单个对象\r\n");
-            sbr.AppendFormat("        {0}Entity = this.GetEntityInner(id)\r\n", fileName.ToLower());
-            sbr.AppendFormat("        if({0}Entity ~= nil) then\r\n", fileName.ToLower());
-            sbr.AppendFormat("            return {0}Entity\r\n", fileName.ToLower());
-            sbr.AppendFormat("        end\r\n");
-            sbr.AppendFormat("    end\r\n");
-            sbr.AppendFormat("\r\n");
-
-            for (int i = 0; i < lstFields.Count; i++)
+            if (currTable != null)
             {
-                DataTableFieldData fieldData = lstFields[i];
-                if (fieldData.IsListField)
-                {
-                    string strListField = string.Empty;
-                    strListField += string.Format("    local {0} = {{}}\r\n", fieldData.FieldName);
-                    strListField += string.Format("    local len = {1}EntityCSharp.{0}Length - 1\r\n", fieldData.FieldName, fileName.ToLower());
-                    strListField += string.Format("    for i = 0, len, 1 do\r\n");
-                    strListField += string.Format("        {0}[#{0}+1] = {1}EntityCSharp:{0}(i)\r\n", fieldData.FieldName, fileName.ToLower());
-                    strListField += string.Format("    end\r\n");
+                var lstFields = currTable.TableFieldDataList;
 
-                    sbr.AppendFormat("{0}\r\n", strListField);
+                sbr.Clear();
+
+                sbr.AppendFormat("-- Create By HH_ExcelFlatBufTool\r\n");
+                sbr.AppendFormat("{0}DBModel = {{ }}\r\n", fileName);
+                sbr.Append("\r\n");
+                sbr.AppendFormat("local this = {0}DBModel\r\n", fileName);
+                sbr.Append("\r\n");
+                sbr.AppendFormat("local {0}Table = {{ }}; --定义表格\r\n", fileName.ToLower());
+                sbr.AppendFormat("local {0}TableDic = {{ }}; --定义表格字典\r\n", fileName.ToLower());
+                sbr.Append("\r\n");
+                sbr.AppendFormat("local dataTableName = \"{0}\"\r\n", fileName);
+                sbr.AppendFormat("local currColumns = {0}\r\n", lstFields.Count);
+                sbr.AppendFormat("local isAlreadyLoadTableInCSharp = false\r\n");
+                sbr.AppendFormat("local lastUseTime = 0\r\n");
+                sbr.AppendFormat("local loadType = {0}; --读取方式 0=从lua文件读取 1=从c#已有数据加载\r\n", tableListItem.LoadType);
+                sbr.Append("\r\n");
+                sbr.AppendFormat("function {0}DBModel.LoadList()\r\n", fileName);
+                sbr.AppendFormat("    if (loadType == 0) then\r\n");
+                sbr.AppendFormat("        local arr = {0}Entity.GetArr()\r\n", fileName);
+                sbr.AppendFormat("        for i = 1, arr.Len do\r\n");
+                sbr.AppendFormat("            local item = arr.ByIdx[i]; --拿到索引数据\r\n");
+                sbr.AppendFormat("            local {0}Entity = {1}Entity.NewFromArrItem(item)\r\n", fileName.ToLower(),
+                    fileName);
+                sbr.AppendFormat("            {0}Table[#{0}Table + 1] = {0}Entity\r\n", fileName.ToLower());
+                sbr.AppendFormat("            {0}TableDic[{0}Entity.Id] = {0}Entity\r\n", fileName.ToLower());
+                sbr.AppendFormat("        end\r\n");
+                sbr.AppendFormat("        GameInit.LoadOneTableComplete()\r\n");
+                sbr.AppendFormat("    else\r\n");
+                sbr.AppendFormat("        --检查这个表在c#中是否已经加载\r\n");
+                sbr.AppendFormat(
+                    "        if (GameEntry.DataTable:CheckAlreadyLoadTable(dataTableName, currColumns)) then\r\n");
+                sbr.AppendFormat("            isAlreadyLoadTableInCSharp = true\r\n");
+                sbr.AppendFormat("            GameInit.LoadOneTableComplete()\r\n");
+                sbr.AppendFormat("        else\r\n");
+                sbr.AppendFormat("            print(\"table load fail\"..dataTableName)\r\n");
+                sbr.AppendFormat("            GameInit.LoadOneTableComplete()\r\n");
+                sbr.AppendFormat("        end\r\n");
+                sbr.AppendFormat("    end\r\n");
+                sbr.AppendFormat("end\r\n");
+                sbr.Append("\r\n");
+                sbr.AppendFormat("function {0}DBModel.GetList()\r\n", fileName);
+                sbr.AppendFormat("    --如果和c#不一致 说明自己会加载\r\n");
+                sbr.AppendFormat("    if (isAlreadyLoadTableInCSharp == false) then\r\n");
+                sbr.AppendFormat("        return {0}Table\r\n", fileName.ToLower());
+                sbr.AppendFormat("    end\r\n");
+                sbr.AppendFormat("\r\n");
+                sbr.AppendFormat("    lastUseTime = Time.time\r\n");
+                sbr.AppendFormat("    --循环c#的表\r\n");
+                sbr.AppendFormat("    local lstCSharp = GameEntry.DataTable.{0}List:GetList()\r\n", fileName);
+                sbr.AppendFormat("    local len = lstCSharp.Count - 1\r\n");
+                sbr.AppendFormat("    local {0}EntityCSharp = nil\r\n", fileName.ToLower());
+                sbr.AppendFormat("    local {0}Entity = nil\r\n", fileName.ToLower());
+                sbr.AppendFormat("\r\n");
+                sbr.AppendFormat("    for i = 0, len, 1 do\r\n");
+                sbr.AppendFormat("        {0}EntityCSharp = lstCSharp[i]\r\n", fileName.ToLower());
+                sbr.AppendFormat(
+                    "        {0}Entity = this.GetEntityFromCSharp({0}EntityCSharp.Id, {0}EntityCSharp)\r\n",
+                    fileName.ToLower());
+                sbr.AppendFormat("        this.AddToTable({0}Entity)\r\n", fileName.ToLower());
+                sbr.AppendFormat("    end\r\n");
+
+                sbr.AppendFormat("    lstCSharp = nil\r\n");
+                sbr.AppendFormat("    len = nil\r\n");
+                sbr.AppendFormat("    {0}EntityCSharp = nil\r\n", fileName.ToLower());
+                sbr.AppendFormat("    {0}Entity = nil\r\n", fileName.ToLower());
+                sbr.AppendFormat("\r\n");
+                sbr.AppendFormat("    return {0}Table\r\n", fileName.ToLower());
+                sbr.AppendFormat("end\r\n");
+
+                sbr.Append("\r\n");
+                sbr.AppendFormat("function {0}DBModel.GetEntity(id)\r\n", fileName);
+                sbr.AppendFormat("    local ret = this.GetEntityInner(id)\r\n");
+                sbr.AppendFormat("    lastUseTime = Time.time\r\n");
+                sbr.AppendFormat("\r\n");
+                sbr.AppendFormat("    --如果在lua中存在 或者和c#不一致 直接返回\r\n");
+                sbr.AppendFormat("    if (ret ~= nil or isAlreadyLoadTableInCSharp == false) then\r\n");
+                sbr.AppendFormat("        return ret\r\n");
+                sbr.AppendFormat("    end\r\n");
+                sbr.AppendFormat("\r\n");
+                sbr.AppendFormat("    --去c#中查询\r\n");
+                sbr.AppendFormat("    ret = this.GetEntityFromCSharp(id)\r\n");
+                sbr.AppendFormat("    if (ret ~= nil) then\r\n");
+                sbr.AppendFormat("        this.AddToTable(ret)\r\n");
+                sbr.AppendFormat("    end\r\n");
+                sbr.AppendFormat("    return ret\r\n");
+                sbr.AppendFormat("end\r\n");
+                sbr.Append("\r\n");
+                sbr.AppendFormat("function {0}DBModel.GetEntityInner(id)\r\n", fileName);
+                sbr.AppendFormat("    return {0}TableDic[id]\r\n", fileName.ToLower());
+                sbr.AppendFormat("end\r\n");
+                sbr.Append("\r\n");
+                sbr.AppendFormat("function {0}DBModel.AddToTable(entity)\r\n", fileName);
+                sbr.AppendFormat("    if (this.GetEntityInner(entity.Id) == nil) then\r\n");
+                sbr.AppendFormat("        {0}Table[#{0}Table + 1] = entity\r\n", fileName.ToLower());
+                sbr.AppendFormat("        {0}TableDic[entity.Id] = entity\r\n", fileName.ToLower());
+                sbr.AppendFormat("    end\r\n");
+                sbr.AppendFormat("end\r\n");
+                sbr.Append("\r\n");
+                sbr.AppendFormat("function {0}DBModel.GetEntityFromCSharp(id, cSharpEntity)\r\n", fileName);
+                sbr.AppendFormat(
+                    "    local {0}EntityCSharp = (cSharpEntity ~= nil and cSharpEntity or GameEntry.DataTable.{1}:GetEntityValue(id))\r\n",
+                    fileName.ToLower(), fileName);
+                sbr.AppendFormat("    if ({0}EntityCSharp == nil) then\r\n", fileName.ToLower());
+                sbr.AppendFormat("        return nil\r\n");
+                sbr.AppendFormat("    end\r\n");
+                sbr.AppendFormat("\r\n");
+                sbr.AppendFormat("    local {0}Entity = nil\r\n", fileName.ToLower());
+                sbr.AppendFormat("    if(cSharpEntity ~= nil) then\r\n");
+                sbr.AppendFormat("        --说明是通过循环列表时候获取单个对象\r\n");
+                sbr.AppendFormat("        {0}Entity = this.GetEntityInner(id)\r\n", fileName.ToLower());
+                sbr.AppendFormat("        if({0}Entity ~= nil) then\r\n", fileName.ToLower());
+                sbr.AppendFormat("            return {0}Entity\r\n", fileName.ToLower());
+                sbr.AppendFormat("        end\r\n");
+                sbr.AppendFormat("    end\r\n");
+                sbr.AppendFormat("\r\n");
+
+                for (int i = 0; i < lstFields.Count; i++)
+                {
+                    DataTableFieldData fieldData = lstFields[i];
+                    if (fieldData.IsListField)
+                    {
+                        string strListField = string.Empty;
+                        strListField += string.Format("    local {0} = {{}}\r\n", fieldData.FieldName);
+                        strListField += string.Format("    local len = {1}EntityCSharp.{0}Length - 1\r\n",
+                            fieldData.FieldName, fileName.ToLower());
+                        strListField += string.Format("    for i = 0, len, 1 do\r\n");
+                        strListField += string.Format("        {0}[#{0}+1] = {1}EntityCSharp:{0}(i)\r\n",
+                            fieldData.FieldName, fileName.ToLower());
+                        strListField += string.Format("    end\r\n");
+
+                        sbr.AppendFormat("{0}\r\n", strListField);
+                    }
                 }
-            }
 
-            sbr.AppendFormat("    {0}Entity = {1}Entity.New(\r\n", fileName.ToLower(), fileName);
+                sbr.AppendFormat("    {0}Entity = {1}Entity.New(\r\n", fileName.ToLower(), fileName);
 
-            string str = "";
-            for (int i = 0; i < lstFields.Count; i++)
-            {
-                DataTableFieldData fieldData = lstFields[i];
-                if (fieldData.IsListField)
+                string str = "";
+                for (int i = 0; i < lstFields.Count; i++)
                 {
-                    str += string.Format("        {0},\r\n", fieldData.FieldName);
+                    DataTableFieldData fieldData = lstFields[i];
+                    if (fieldData.IsListField)
+                    {
+                        str += string.Format("        {0},\r\n", fieldData.FieldName);
+                    }
+                    else
+                    {
+                        str += string.Format("        {1}EntityCSharp.{0},\r\n", fieldData.FieldName,
+                            fileName.ToLower());
+                    }
                 }
-                else
-                {
-                    str += string.Format("        {1}EntityCSharp.{0},\r\n", fieldData.FieldName, fileName.ToLower());
-                }
-            }
-            str = str.TrimEnd(',', '\r', '\n');
-            sbr.AppendFormat("{0}\r\n", str);
-            sbr.Append("        )\r\n");
-            sbr.AppendFormat("    {0}EntityCSharp = nil\r\n", fileName.ToLower());
 
-            for (int i = 0; i < lstFields.Count; i++)
-            {
-                DataTableFieldData fieldData = lstFields[i];
-                if (fieldData.IsListField)
+                str = str.TrimEnd(',', '\r', '\n');
+                sbr.AppendFormat("{0}\r\n", str);
+                sbr.Append("        )\r\n");
+                sbr.AppendFormat("    {0}EntityCSharp = nil\r\n", fileName.ToLower());
+
+                for (int i = 0; i < lstFields.Count; i++)
                 {
-                    sbr.AppendFormat("    {0} = nil\r\n", fieldData.FieldName);
+                    DataTableFieldData fieldData = lstFields[i];
+                    if (fieldData.IsListField)
+                    {
+                        sbr.AppendFormat("    {0} = nil\r\n", fieldData.FieldName);
+                    }
                 }
             }
 
@@ -1536,24 +1611,30 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbr.AppendFormat("end\r\n");
             sbr.Append("\r\n");
             sbr.AppendFormat("function {0}DBModel.CheckGC()\r\n", fileName);
-            sbr.AppendFormat("    if (isAlreadyLoadTableInCSharp and Time.time > lastUseTime + GameEntry.Lua.LuaDataTableLife and #{0}Table > 0) then\r\n", fileName.ToLower());
+            sbr.AppendFormat(
+                "    if (isAlreadyLoadTableInCSharp and Time.time > lastUseTime + GameEntry.Lua.LuaDataTableLife and #{0}Table > 0) then\r\n",
+                fileName.ToLower());
             sbr.AppendFormat("        {0}Table = {{ }}\r\n", fileName.ToLower());
             sbr.AppendFormat("        {0}TableDic = {{ }}\r\n", fileName.ToLower());
             sbr.AppendFormat("    end\r\n");
             sbr.AppendFormat("end");
 
-            using (FileStream fs = new FileStream(string.Format("{0}/{1}DBModel.bytes", Config.ClientOutLuaFilePath, fileName), FileMode.Create))
+            using (FileStream fs =
+                   new FileStream(string.Format("{0}/{1}DBModel.bytes", Config.ClientOutLuaFilePath, fileName),
+                       FileMode.Create))
             {
                 if (!Directory.Exists(Config.ClientOutLuaFilePath))
                 {
                     Directory.CreateDirectory(Config.ClientOutLuaFilePath);
                 }
+
                 using (StreamWriter sw = new StreamWriter(fs))
                 {
                     sw.Write(sbr.ToString());
                 }
             }
         }
+
         #endregion
 
         private static void DataTableDefine()
@@ -1565,18 +1646,22 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
 
             foreach (DataTableHeadData dataTableHeadData in CurrTableHead.TableHeadDataList)
             {
-                if (Config.CSharpTableList.Find((TableListItem item) => item.TableName == dataTableHeadData.TableName) != null)
+                if (Config.CSharpTableList.Find((TableListItem item) =>
+                        item.TableName == dataTableHeadData.TableName) != null)
                 {
                     sbr.AppendFormat("    public const string {0}Name = \"{0}\";\r\n", dataTableHeadData.TableName);
-                    sbr.AppendFormat("    public const int {0}Version = {1};\r\n", dataTableHeadData.TableName, dataTableHeadData.TableFieldDataList.Count);
+                    sbr.AppendFormat("    public const int {0}Version = {1};\r\n", dataTableHeadData.TableName,
+                        dataTableHeadData.TableFieldDataList.Count);
                 }
             }
+
             sbr.Append("}");
             string path = string.Format("{0}/DataTableDefine.cs", Config.ClientOutCSharpFilePath);
             if (!Directory.Exists(Config.ClientOutCSharpFilePath))
             {
                 Directory.CreateDirectory(Config.ClientOutCSharpFilePath);
             }
+
             using (FileStream fs = new FileStream(path, FileMode.Create))
             {
                 using (StreamWriter sw = new StreamWriter(fs))
@@ -1589,6 +1674,7 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
         #endregion
 
         #region 创建多语言表
+
         private static void CreateLocalization(string fileName, DataTable dt)
         {
             //try
@@ -1597,6 +1683,7 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             {
                 Directory.Delete(Config.ClientOutBytesFilePath + "/Localization", true);
             }
+
             Directory.CreateDirectory(Config.ClientOutBytesFilePath + "/Localization");
 
             int rows = dt.Rows.Count;
@@ -1619,8 +1706,6 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
 
                 for (int i = 0; i < rows; i++)
                 {
-
-
                     m_ColumnStringOffset.Clear();
 
                     string key = string.Empty;
@@ -1653,13 +1738,14 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
                     builder.AddOffset(0, keyOffset.Value, 0);
                     int rowOffset = builder.EndTable();
                     m_Offset[i - 3] = rowOffset;
-
                 }
+
                 builder.StartVector(4, rows - 3, 4);
                 for (int i = rows - 4; i >= 0; i--)
                 {
                     builder.AddOffset(m_Offset[i]);
                 }
+
                 var offset = builder.EndVector();
 
                 builder.StartTable(1);
@@ -1676,7 +1762,11 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
                 {
                     Directory.CreateDirectory(Config.ClientOutBytesFilePath);
                 }
-                FileStream fs = new FileStream(string.Format("{0}/Localization/{1}", Config.ClientOutBytesFilePath, tableHeadArr[currValueColumn, 0] + ".bytes"), FileMode.Create);
+
+                FileStream fs =
+                    new FileStream(
+                        string.Format("{0}/Localization/{1}", Config.ClientOutBytesFilePath,
+                            tableHeadArr[currValueColumn, 0] + ".bytes"), FileMode.Create);
                 fs.Write(buffer, 0, buffer.Length);
                 fs.Close();
 
@@ -1688,6 +1778,7 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             //    Console.WriteLine("表格=>" + fileName + " 处理失败:" + ex.Message);
             //}
         }
+
         #endregion
 
         /// <summary>
@@ -1716,17 +1807,17 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
                 || dt.Columns[2].ColumnName != "Name"
                 || dt.Columns[3].ColumnName != "Type"
                 || dt.Columns[4].ColumnName != "Value"
-            )
+               )
             {
                 Console.WriteLine("配置表=>" + sysTable.TableName + " 不符合规范");
                 return;
             }
 
 
-
             //客户端c#
-            string clientCsharpFileName = sysTable.ClientCSharpFilePath.Replace("\\", "/").Substring(sysTable.ClientCSharpFilePath.LastIndexOf("/") + 1
-                ).Replace(".cs", "");
+            string clientCsharpFileName = sysTable.ClientCSharpFilePath.Replace("\\", "/").Substring(
+                sysTable.ClientCSharpFilePath.LastIndexOf("/") + 1
+            ).Replace(".cs", "");
 
             StringBuilder sbrClientCsharp = new StringBuilder();
 
@@ -1734,8 +1825,9 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbrClientCsharp.Append("{\r\n");
 
             //服务器c#
-            string serverCsharpFileName = sysTable.ServerCSharpFilePath.Substring(sysTable.ServerCSharpFilePath.LastIndexOf("/") + 1
-                ).Replace(".cs", "");
+            string serverCsharpFileName = sysTable.ServerCSharpFilePath.Substring(
+                sysTable.ServerCSharpFilePath.LastIndexOf("/") + 1
+            ).Replace(".cs", "");
 
             StringBuilder sbrServerCsharp = new StringBuilder();
 
@@ -1744,8 +1836,9 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
 
 
             //客户端lua
-            string clientLuaFileName = sysTable.ClientLuaFilePath.Substring(sysTable.ClientLuaFilePath.LastIndexOf("/") + 1
-    ).Replace(".bytes", "");
+            string clientLuaFileName = sysTable.ClientLuaFilePath.Substring(
+                sysTable.ClientLuaFilePath.LastIndexOf("/") + 1
+            ).Replace(".bytes", "");
             StringBuilder sbrClientLua = new StringBuilder();
 
             sbrClientLua.AppendFormat("{0} = {{\r\n", clientLuaFileName);
@@ -1806,11 +1899,13 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             //客户端c#
             if (!string.IsNullOrEmpty(sysTable.ClientCSharpFilePath))
             {
-                string clientCsharpFileFoler = sysTable.ClientCSharpFilePath.Substring(0, sysTable.ClientCSharpFilePath.LastIndexOf("/"));
+                string clientCsharpFileFoler =
+                    sysTable.ClientCSharpFilePath.Substring(0, sysTable.ClientCSharpFilePath.LastIndexOf("/"));
                 if (!Directory.Exists(clientCsharpFileFoler))
                 {
                     Directory.CreateDirectory(clientCsharpFileFoler);
                 }
+
                 using (FileStream fs = new FileStream(sysTable.ClientCSharpFilePath, FileMode.Create))
                 {
                     using (StreamWriter sw = new StreamWriter(fs))
@@ -1823,11 +1918,13 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             //服务器c#
             if (!string.IsNullOrEmpty(sysTable.ServerCSharpFilePath))
             {
-                string serverCsharpFileFoler = sysTable.ServerCSharpFilePath.Substring(0, sysTable.ServerCSharpFilePath.LastIndexOf("/"));
+                string serverCsharpFileFoler =
+                    sysTable.ServerCSharpFilePath.Substring(0, sysTable.ServerCSharpFilePath.LastIndexOf("/"));
                 if (!Directory.Exists(serverCsharpFileFoler))
                 {
                     Directory.CreateDirectory(serverCsharpFileFoler);
                 }
+
                 using (FileStream fs = new FileStream(sysTable.ServerCSharpFilePath, FileMode.Create))
                 {
                     using (StreamWriter sw = new StreamWriter(fs))
@@ -1840,11 +1937,13 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             //客户端lua
             if (!string.IsNullOrEmpty(sysTable.ClientLuaFilePath))
             {
-                string clientLuaFileFoler = sysTable.ClientLuaFilePath.Substring(0, sysTable.ClientLuaFilePath.LastIndexOf("/"));
+                string clientLuaFileFoler =
+                    sysTable.ClientLuaFilePath.Substring(0, sysTable.ClientLuaFilePath.LastIndexOf("/"));
                 if (!Directory.Exists(clientLuaFileFoler))
                 {
                     Directory.CreateDirectory(clientLuaFileFoler);
                 }
+
                 using (FileStream fs = new FileStream(sysTable.ClientLuaFilePath, FileMode.Create))
                 {
                     using (StreamWriter sw = new StreamWriter(fs))
@@ -1858,6 +1957,7 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
         }
 
         #region CreateSysTable 创建提供表代码
+
         /// <summary>
         /// 创建提供表代码
         /// </summary>
@@ -1896,18 +1996,20 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
                 Console.WriteLine("系统表=>" + sysTable.TableName + " 不符合规范");
                 return;
             }
+
             if (dt.Columns[0].ColumnName != "Id"
                 || dt.Columns[1].ColumnName != "Desc"
                 || dt.Columns[2].ColumnName != "Name"
-                )
+               )
             {
                 Console.WriteLine("系统表=>" + sysTable.TableName + " 不符合规范");
                 return;
             }
 
             //客户端c#
-            string clientCsharpFileName = sysTable.ClientCSharpFilePath.Substring(sysTable.ClientCSharpFilePath.LastIndexOf("/") + 1
-                ).Replace(".cs", "");
+            string clientCsharpFileName = sysTable.ClientCSharpFilePath.Substring(
+                sysTable.ClientCSharpFilePath.LastIndexOf("/") + 1
+            ).Replace(".cs", "");
 
             StringBuilder sbrClientCsharp = new StringBuilder();
 
@@ -1915,8 +2017,9 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             sbrClientCsharp.Append("{\r\n");
 
             //服务器c#
-            string serverCsharpFileName = sysTable.ServerCSharpFilePath.Substring(sysTable.ServerCSharpFilePath.LastIndexOf("/") + 1
-                ).Replace(".cs", "");
+            string serverCsharpFileName = sysTable.ServerCSharpFilePath.Substring(
+                sysTable.ServerCSharpFilePath.LastIndexOf("/") + 1
+            ).Replace(".cs", "");
 
             StringBuilder sbrServerCsharp = new StringBuilder();
 
@@ -1925,8 +2028,9 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
 
 
             //客户端lua
-            string clientLuaFileName = sysTable.ClientLuaFilePath.Substring(sysTable.ClientLuaFilePath.LastIndexOf("/") + 1
-    ).Replace(".bytes", "");
+            string clientLuaFileName = sysTable.ClientLuaFilePath.Substring(
+                sysTable.ClientLuaFilePath.LastIndexOf("/") + 1
+            ).Replace(".bytes", "");
             StringBuilder sbrClientLua = new StringBuilder();
 
             sbrClientLua.AppendFormat("{0} = {{\r\n", clientLuaFileName);
@@ -1970,11 +2074,13 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             //客户端c#
             if (!string.IsNullOrEmpty(sysTable.ClientCSharpFilePath))
             {
-                string clientCsharpFileFoler = sysTable.ClientCSharpFilePath.Substring(0, sysTable.ClientCSharpFilePath.LastIndexOf("/"));
+                string clientCsharpFileFoler =
+                    sysTable.ClientCSharpFilePath.Substring(0, sysTable.ClientCSharpFilePath.LastIndexOf("/"));
                 if (!Directory.Exists(clientCsharpFileFoler))
                 {
                     Directory.CreateDirectory(clientCsharpFileFoler);
                 }
+
                 using (FileStream fs = new FileStream(sysTable.ClientCSharpFilePath, FileMode.Create))
                 {
                     using (StreamWriter sw = new StreamWriter(fs))
@@ -1987,11 +2093,13 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             //服务器c#
             if (!string.IsNullOrEmpty(sysTable.ServerCSharpFilePath))
             {
-                string serverCsharpFileFoler = sysTable.ServerCSharpFilePath.Substring(0, sysTable.ServerCSharpFilePath.LastIndexOf("/"));
+                string serverCsharpFileFoler =
+                    sysTable.ServerCSharpFilePath.Substring(0, sysTable.ServerCSharpFilePath.LastIndexOf("/"));
                 if (!Directory.Exists(serverCsharpFileFoler))
                 {
                     Directory.CreateDirectory(serverCsharpFileFoler);
                 }
+
                 using (FileStream fs = new FileStream(sysTable.ServerCSharpFilePath, FileMode.Create))
                 {
                     using (StreamWriter sw = new StreamWriter(fs))
@@ -2004,11 +2112,13 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             //客户端lua
             if (!string.IsNullOrEmpty(sysTable.ClientLuaFilePath))
             {
-                string clientLuaFileFoler = sysTable.ClientLuaFilePath.Substring(0, sysTable.ClientLuaFilePath.LastIndexOf("/"));
+                string clientLuaFileFoler =
+                    sysTable.ClientLuaFilePath.Substring(0, sysTable.ClientLuaFilePath.LastIndexOf("/"));
                 if (!Directory.Exists(clientLuaFileFoler))
                 {
                     Directory.CreateDirectory(clientLuaFileFoler);
                 }
+
                 using (FileStream fs = new FileStream(sysTable.ClientLuaFilePath, FileMode.Create))
                 {
                     using (StreamWriter sw = new StreamWriter(fs))
@@ -2020,6 +2130,7 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
 
             Console.WriteLine("系统表=>" + sysTable.TableName + " 处理完毕");
         }
+
         #endregion
 
         /// <summary>
@@ -2031,7 +2142,6 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
 
         private static void CreateTableHead()
         {
-
             StringBuilder sbr = new StringBuilder();
             sbr.Append("namespace HHFramework.DataTable;");
             sbr.Append("\r\n");
@@ -2057,7 +2167,7 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
                         if (dataType == "int_1"
                             || dataType == "string_1"
                             || dataType == "float_1"
-                            )
+                           )
                         {
                             str += string.Format("	{0}:[{1}];\r\n", field.FieldName, ChangeByteType(field.FieldType));
                         }
@@ -2100,10 +2210,11 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
 
             //创建c#文件
             //执行Flatc.exe
-            Process.Start(Config.FlatcPath + "/flatc.exe", "--csharp -o " + Config.FlatcPath + "/Resource/DataTableCS " + Config.FlatcPath + "/AllTables.fbs");
+            Process.Start(Config.FlatcPath + "/flatc.exe",
+                "--csharp -o " + Config.FlatcPath + "/Resource/DataTableCS " + Config.FlatcPath + "/AllTables.fbs");
 
             Console.WriteLine("等待创建文件");
-            Thread.Sleep(500);//
+            Thread.Sleep(500); //
             //File.Delete(Config.FlatcPath + "/AllTables.fbs");
             //把这些文件复制到目标目录
             string[] files = Directory.GetFiles(Config.FlatcPath + "/Resource/DataTableCS/HHFramework/DataTable");
@@ -2147,6 +2258,7 @@ CurrTableHead.TableHeadDataList.Find((DataTableHeadData data) => { return data.T
             {
                 return "float";
             }
+
             return fieldType;
         }
 
