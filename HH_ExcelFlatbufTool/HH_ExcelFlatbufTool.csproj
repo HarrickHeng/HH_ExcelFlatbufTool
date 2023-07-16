@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+	<ApplicationIcon>HH_ExcelFlatbufTool_Icon.ico</ApplicationIcon>
     <StartupObject></StartupObject>
   </PropertyGroup>
 

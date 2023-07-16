@@ -43,7 +43,7 @@ namespace HH_ExcelFlatbufTool
             {
                 string filePath = arr[i];
                 FileInfo file = new FileInfo(filePath);
-                if (file.Name.IndexOf("~$") > -1)
+                if (file.Name.IndexOf("~$", StringComparison.Ordinal) > -1)
                 {
                     continue;
                 }
@@ -1489,7 +1489,7 @@ namespace HH_ExcelFlatbufTool
                 sbr.AppendFormat("\r\n");
                 sbr.AppendFormat("    lastUseTime = Time.time\r\n");
                 sbr.AppendFormat("    --循环c#的表\r\n");
-                sbr.AppendFormat("    local lstCSharp = GameEntry.DataTable.{0}List:GetList()\r\n", fileName);
+                sbr.AppendFormat("    local lstCSharp = GameEntry.DataTable.{0}:GetList()\r\n", fileName);
                 sbr.AppendFormat("    local len = lstCSharp.Count - 1\r\n");
                 sbr.AppendFormat("    local {0}EntityCSharp = nil\r\n", fileName.ToLower());
                 sbr.AppendFormat("    local {0}Entity = nil\r\n", fileName.ToLower());
@@ -2210,12 +2210,18 @@ namespace HH_ExcelFlatbufTool
 
             //创建c#文件
             //执行Flatc.exe
+            foreach (var file in Directory.GetFiles(Config.FlatcPath + "/Resource/DataTableCS/HHFramework/DataTable", "*.cs"))
+            {
+                var fileInfo = new FileInfo(file);
+                fileInfo.Delete();
+            }
+            
             Process.Start(Config.FlatcPath + "/flatc.exe",
                 "--csharp -o " + Config.FlatcPath + "/Resource/DataTableCS " + Config.FlatcPath + "/AllTables.fbs");
 
             Console.WriteLine("等待创建文件");
-            Thread.Sleep(500); //
-            //File.Delete(Config.FlatcPath + "/AllTables.fbs");
+            Thread.Sleep(500);
+            // File.Delete(Config.FlatcPath + "/AllTables.fbs");
             //把这些文件复制到目标目录
             string[] files = Directory.GetFiles(Config.FlatcPath + "/Resource/DataTableCS/HHFramework/DataTable");
             foreach (string file in files)

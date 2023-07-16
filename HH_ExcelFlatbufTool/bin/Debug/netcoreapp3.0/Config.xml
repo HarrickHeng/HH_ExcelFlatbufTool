@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Root>
-    <!--FlatcPath-->
+  <!--FlatcPath-->
   <FlatcPath>E:\CodeProject\Unity_DEMO\HH_ExcelFlatbufTool\TableTool</FlatcPath>
   
   <!--原始表格路径-->
@@ -20,11 +20,11 @@
   
   <SysTable>
     <!--系统表 会对系统表生成对应类-->
-	  <Item TableName="DTSys_Config">
-		  <ClientCSharpFilePath>E:\CodeProject\Unity_DEMO\HH_Framework\Assets\HHScripts\Const\SysConfig.cs</ClientCSharpFilePath>
-		  <ClientLuaFilePath>E:\CodeProject\Unity_DEMO\HH_Framework\Assets\Download\xLuaLogic\Common\SysConfig.bytes</ClientLuaFilePath>
-		  <ServerCSharpFilePath>E:\CodeProject\Unity_DEMO\Server\HHServer\HHServer.Common\Const\SysConfig.cs</ServerCSharpFilePath>
-	  </Item>
+	<Item TableName="DTSys_Config">
+		<ClientCSharpFilePath>E:\CodeProject\Unity_DEMO\HH_Framework\Assets\HHScripts\Const\SysConfig.cs</ClientCSharpFilePath>
+		<ClientLuaFilePath>E:\CodeProject\Unity_DEMO\HH_Framework\Assets\Download\xLuaLogic\Common\SysConfig.bytes</ClientLuaFilePath>
+		<ServerCSharpFilePath>E:\CodeProject\Unity_DEMO\Server\HHServer\HHServer.Common\Const\SysConfig.cs</ServerCSharpFilePath>
+	</Item>
     <Item TableName="DTSys_Code">
       <ClientCSharpFilePath>E:\CodeProject\Unity_DEMO\HH_Framework\Assets\HHScripts\Const\SysCode.cs</ClientCSharpFilePath>
       <ClientLuaFilePath>E:\CodeProject\Unity_DEMO\HH_Framework\Assets\Download\xLuaLogic\Common\SysCode.bytes</ClientLuaFilePath>
@@ -61,6 +61,7 @@
 		<Item Name="DTBuff" />
 		<Item Name="DTSkill" />
 		<Item Name="DTSkillLevel" />
+		<Item Name="DTShop"/>
 	</CSharpTableList>
 	<LuaTableList>
 		<!--LoadType 0=从lua文件读取 1=从c#已有数据加载-->
